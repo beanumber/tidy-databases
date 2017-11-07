@@ -1,0 +1,90 @@
+---
+title: "Databases in the tidyverse"
+author: Ben Baumer
+ratio: 16x10
+output:
+  rmdshower::shower_presentation:
+    self_contained: false
+    katex: true
+    theme: ribbon
+---
+
+## Databases in the tidyverse  { .white }
+
+<img src="https://www-tc.pbs.org/wnet/nature/files/2014/09/DolphinDefender-Main.jpg" class="cover">
+
+## &nbsp; { .white }
+
+<img src="https://lsru.github.io/tv_course/img/01_tidyverse_data_science.png" class="cover">
+
+## &nbsp; { .white }
+
+<img src="https://rviews.rstudio.com/post/2017-05-11-databases-using-r_files/today.png" class="cover">
+
+# `dplyr`
+
+## The Five verbs
+
+- `select()`
+- `mutate()`
+- `filter()`
+- `arrange()`
+- `summarize()`
+
+## For example
+
+## `dplyr` demo
+
+## `dplyr` <-> SQL
+
+<div class="double">
+`dplyr`
+```{r, eval=FALSE}
+table %>%
+  filter(field == "value") %>%
+  left_join(lkup, 
+    by = c("lkup_id" = "id") %>%
+  group_by(year) %>%
+  summarize(N = sum(1)) %>%
+  filter(N > 100) %>%
+  arrange(desc(N)) %>%
+  head(10)
+
+```
+
+MySQL
+```{sql, eval=FALSE}
+SELECT
+  year, sum(1) as N
+FROM table t
+LEFT JOIN lkup l
+  ON t.lkup_id = l.id
+WHERE field = "value"
+GROUP BY year
+HAVING N > 100
+ORDER BY N desc
+LIMIT 0, 10;
+```
+</div>
+
+## Translation
+
+## Code pass-thru
+
+# `DBI`
+
+## `dbplyr`
+
+## Supported platforms
+
+## Common interface
+
+## `DBI` demo
+
+# Performance
+
+## Memory footprint
+
+## Lazy evaluation
+
+# Thank you!!
