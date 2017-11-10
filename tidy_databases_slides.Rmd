@@ -183,7 +183,9 @@ mtcars %>%
 
 # `dbplyr`
 
-## `dbplyr`
+## &nbsp;
+
+<img src="https://pbs.twimg.com/media/C8Fm5dxWsAE5cPk.jpg" class="cover">
 
 ## `dplyr` + SQL connection
 
