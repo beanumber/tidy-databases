@@ -16,3 +16,12 @@ The `dplyr` package within R provides a flexible and powerful syntax for data wr
   Amherst College Department of Mathematics and Statistics
 
 > Nicholas Horton is Professor of Statistics at Amherst College, with methodologic research interests in longitudinal regression models, missing data methods, and statistical computing.  He graduated from the Harvard TH Chan School of Public Health in 1999.  Nick has received the ASA's Founders Award, the Waller Education Award,  the William Warde Mu Sigma Rho Education Award, and the MAA Hogg Award for Excellence in Teaching.  He has published more than 160 papers, co-authored a series of four books on statistical computing and data science, and was co-PI on the NSF funded MOSAIC project.  Nick is a Fellow of the ASA, served as a member of the ASA Board, chairs the Committee of Presidents of Statistical Societies and is the past-chair of the ASA Section on Statistical Education.  He is a member of the National Academies of Sciences Committee on Applied and Theoretical Statistics and two Academy studies on undergraduate data science education.
+
+### Other resources
+
+- [Setting the stage for data science](http://chance.amstat.org/2015/04/setting-the-stage/): integration of data management and databases in statistics courses (CHANCE 2015), also https://arxiv.org/abs/1401.3269
+- [R for Data Science](http://r4ds.had.co.nz/)
+- [Modern Data Science with R](http://mdsr-book.github.io/)
+- [Dplyr vignettes](http://dplyr.tidyverse.org/)
+
+last updated November 9, 2017
