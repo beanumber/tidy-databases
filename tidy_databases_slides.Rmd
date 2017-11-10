@@ -32,17 +32,185 @@ db <- dbConnect_scidb(dbname = "imdb")
 
 # `dplyr`
 
-## The Five verbs
+```{bash, eval=FALSE}
+shutter -w=.*data-transformation.* -s=100,100,300,300 -o select.png -e
+```
+
+## The Five Verbs
 
 - `select()`
-- `mutate()`
 - `filter()`
+- `mutate()` (and `rename()`)
 - `arrange()`
 - `summarize()`
 
+## Philosophy
+
+- Each *verb* takes a data frame and returns a data frame
+    - (actually a `tbl_df`)
+    - allows chaining with `%>%` (more on that later)
+- Idea: 
+    - master a few simple commands
+    - use your creativity to combine them
+- Cheat Sheet:
+    - (https://www.rstudio.com/resources/cheatsheets/)
+
+## `select()`: take a subset of the **columns** 
+
+<div class="centered">
+  <img src="../gfx/select.png" width="700px"/>
+</div>
+
+## `filter()`: take a subset of the **rows**
+
+<div class="centered">
+  <img src="../gfx/filter.png" width="700px"/>
+</div>
+
+## `mutate()`: add or modify a **column**
+
+<div class="centered">
+  <img src="../gfx/mutate.png" width="700px"/>
+</div>
+
+## `rename()`: rename a **column**
+
+<div class="centered">
+  <img src="../gfx/rename.png" width="700px"/>
+</div>
+
+
+## `arrange()`: sort the **rows**
+
+<div class="centered">
+  <img src="../gfx/arrange.png" width="700px"/>
+</div>
+
+
+## `summarize()`: collapse into **a single row**
+
+<div class="centered">
+  <img src="../gfx/summarize.png" width="700px"/>
+</div>
+
+
+# The pipe
+
+## `magrittr`
+
+<img src="https://d21ii91i3y6o6h.cloudfront.net/gallery_images/from_proof/3632/small/1419844831/magrittr.png" class="cover"/>
+
+## Aside: `magrittr`
+
+
+<div class="double">
+
+<img src="https://upload.wikimedia.org/wikipedia/en/b/b9/MagrittePipe.jpg" class="one-col-image">
+
+- [The Treachery of Images](https://en.wikipedia.org/wiki/The_Treachery_of_Images)
+- Pipe (`%>%`) is provided by `magrittr` package
+- Inspired by pipe (`|`) in UNIX
+
+</div>
+
+## Using the pipe
+
+The expression
+
+```{r, eval=FALSE}
+mydata %>%
+  verb(arguments)
+```
+
+is the same as:
+
+```{r, eval=FALSE}
+verb(mydata, arguments)
+```
+
+In effect, `function(x, args) = x %>% function(args)`.
+
+## Why the pipe?
+
+Instead of having to read/write:
+
+```{r, eval=FALSE}
+select(filter(mutate(data, args1), args2), args3)
+```
+
+You can do:
+
+```{r, eval=FALSE}
+data %>%
+  mutate(args1) %>%
+  filter(args2) %>%
+  select(args3)
+```
+
+
+## Coding Little Bunny Foo Foo
+
+- Nested form:
+
+```{r, eval=FALSE}
+bop(scoop(hop(foo_foo, through = forest), up = field_mice), on = head)
+```
+
+- With pipes:
+
+```{r, eval=FALSE}
+foo_foo %>%
+  hop(through = forest) %>%
+  scoop(up = field_mouse) %>%
+  bop(on = head)
+```
+
+(https://github.com/hadley/r4ds/blob/master/pipes.Rmd)
+
 ## For example
 
+```{r}
+mtcars %>%
+  filter(am == 1) %>%
+  group_by(cyl) %>%
+  summarize(num_models = n(), 
+            mean_mpg = mean(mpg)) %>%
+  arrange(desc(mean_mpg))
+```
+
 ## `dplyr` demo
+
+
+# `dbplyr`
+
+## `dbplyr`
+
+## `dplyr` + SQL connection
+
+- `dplyr` can access a SQL database directly
+- Instead of `tbl_df`, you have a `tbl_sql`
+- Data is stored and processed in SQL
+    - Tiny memory footprint in R
+- **Lazy evaluation**
+    - server-side processing
+    - `dplyr` to SQL translation via `show_query()`
+
+## Example: `tbl_sql`
+
+```{r}
+db <- src_mysql(db = "imdb", host = "scidb.smith.edu",
+                user = "mth292", password = "RememberPi")
+title <- tbl(db, "title")
+class(title)
+print(object.size(title), units = "Kb")
+```
+
+## `tbl_sql` works just like a `tbl_df`
+
+```{r}
+title
+```
+
 
 ## `dplyr` <-> SQL
 
@@ -76,52 +244,6 @@ LIMIT 0, 10;
 ```
 </div>
 
-## Translation
-
-## Code pass-thru
-
-# `DBI`
-
-## `dbplyr`
-
-## Supported platforms
-
-## Common interface
-
-## `DBI` demo
-
-# Performance
-
-## Memory footprint
-
-## Lazy evaluation
-
-
-## `dplyr` + SQL connection
-
-- `dplyr` can access a SQL database directly
-- Instead of `tbl_df`, you have a `tbl_sql`
-- Data is stored and processed in SQL
-    - Tiny memory footprint in R
-- **Lazy evaluation**
-    - server-side processing
-    - `dplyr` to SQL translation via `show_query()`
-
-## Example: `tbl_sql`
-
-```{r}
-db <- src_mysql(db = "imdb", host = "scidb.smith.edu",
-                user = "mth292", password = "RememberPi")
-title <- tbl(db, "title")
-class(title)
-print(object.size(title), units = "Kb")
-```
-
-## `tbl_sql` works just like a `tbl_df`
-
-```{r}
-title
-```
 
 ## Example: `show_query()`
 
@@ -131,6 +253,29 @@ title %>%
   select(production_year, title) %>%
   show_query()
 ```
+
+## Translation
+
+## Code pass-thru
+
+
+# `DBI`
+
+## Supported platforms
+
+## Common interface
+
+## `DBI` demo
+
+# Performance
+
+## `collect()`
+
+## Memory footprint
+
+
+
+## Lazy evaluation
 
 
 # Thank you!!
