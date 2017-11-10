@@ -9,6 +9,15 @@ output:
     theme: ribbon
 ---
 
+
+```{r, echo=FALSE, message=FALSE}
+knitr::opts_chunk$set(engine.opts = "--defaults-group-suffix=clientscidb -t imdb")
+library(mdsr)
+library(RMySQL)
+db <- dbConnect_scidb(dbname = "imdb")
+```
+
+
 ## Databases in the tidyverse  { .white }
 
 <img src="https://www-tc.pbs.org/wnet/nature/files/2014/09/DolphinDefender-Main.jpg" class="cover">
@@ -86,5 +95,42 @@ LIMIT 0, 10;
 ## Memory footprint
 
 ## Lazy evaluation
+
+
+## `dplyr` + SQL connection
+
+- `dplyr` can access a SQL database directly
+- Instead of `tbl_df`, you have a `tbl_sql`
+- Data is stored and processed in SQL
+    - Tiny memory footprint in R
+- **Lazy evaluation**
+    - server-side processing
+    - `dplyr` to SQL translation via `show_query()`
+
+## Example: `tbl_sql`
+
+```{r}
+db <- src_mysql(db = "imdb", host = "scidb.smith.edu",
+                user = "mth292", password = "RememberPi")
+title <- tbl(db, "title")
+class(title)
+print(object.size(title), units = "Kb")
+```
+
+## `tbl_sql` works just like a `tbl_df`
+
+```{r}
+title
+```
+
+## Example: `show_query()`
+
+```{r}
+title %>%
+  filter(title == 'Star Wars', kind_id == 1) %>%
+  select(production_year, title) %>%
+  show_query()
+```
+
 
 # Thank you!!
