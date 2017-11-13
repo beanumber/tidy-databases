@@ -1,6 +1,6 @@
 ---
 title: "Databases in the tidyverse"
-author: Ben Baumer
+author: Ben Baumer and Nick Horton
 ratio: 16x10
 output:
   rmdshower::shower_presentation:
@@ -20,7 +20,16 @@ db <- dbConnect_scidb(dbname = "imdb")
 
 ## Databases in the tidyverse  { .white }
 
-<img src="https://www-tc.pbs.org/wnet/nature/files/2014/09/DolphinDefender-Main.jpg" class="cover">
+<img src="https://wallpapercave.com/wp/5U98bOE.jpg" class="cover">
+
+</br></br></br>
+</br></br></br>
+
+<p class="white">
+ASA Webinar</br>
+Ben Baumer & Nick Horton</br>
+November 15, 2017</br>
+</p>
 
 ## &nbsp; { .white }
 
@@ -40,9 +49,9 @@ shutter -w=.*data-transformation.* -s=100,100,300,300 -o select.png -e
 
 - `select()`
 - `filter()`
-- `mutate()` (and `rename()`)
+- `mutate()`
 - `arrange()`
-- `summarize()`
+- `summarize()` (esp. with `group_by()`)
 
 ## Philosophy
 
@@ -58,39 +67,39 @@ shutter -w=.*data-transformation.* -s=100,100,300,300 -o select.png -e
 ## `select()`: take a subset of the **columns** 
 
 <div class="centered">
-  <img src="../gfx/select.png" width="700px"/>
+  <img src="gfx/select.png" width="700px"/>
 </div>
 
 ## `filter()`: take a subset of the **rows**
 
 <div class="centered">
-  <img src="../gfx/filter.png" width="700px"/>
+  <img src="gfx/filter.png" width="700px"/>
 </div>
 
 ## `mutate()`: add or modify a **column**
 
 <div class="centered">
-  <img src="../gfx/mutate.png" width="700px"/>
-</div>
-
-## `rename()`: rename a **column**
-
-<div class="centered">
-  <img src="../gfx/rename.png" width="700px"/>
+  <img src="gfx/mutate.png" width="700px"/>
 </div>
 
 
 ## `arrange()`: sort the **rows**
 
 <div class="centered">
-  <img src="../gfx/arrange.png" width="700px"/>
+  <img src="gfx/arrange.png" width="700px"/>
 </div>
 
 
 ## `summarize()`: collapse into **a single row**
 
 <div class="centered">
-  <img src="../gfx/summarize.png" width="700px"/>
+  <img src="gfx/summarise.png" width="700px"/>
+</div>
+
+## `group_by()`: apply operations to groups
+
+<div class="centered">
+  <img src="gfx/group_by.png" width="700px"/>
 </div>
 
 
@@ -111,6 +120,12 @@ shutter -w=.*data-transformation.* -s=100,100,300,300 -o select.png -e
 - Pipe (`%>%`) is provided by `magrittr` package
 - Inspired by pipe (`|`) in UNIX
 
+</div>
+
+## How does the pipe work?
+
+<div class="centered">
+  <img src="gfx/tidy-pipe.png" width="700px"/>
 </div>
 
 ## Using the pipe
@@ -256,26 +271,118 @@ title %>%
   show_query()
 ```
 
-## Translation
+## Translation of basic functions
 
-## Code pass-thru
+```{r, message=FALSE}
+library(dbplyr)
+translate_sql(ceiling(mpg))
+translate_sql(mean(mpg))
+translate_sql(cyl == 4)
+translate_sql(cyl %in% c(4, 6, 8))
+```
 
+## Code pass-thru of other functions
+
+```{r, message=FALSE}
+translate_sql(paste("hp", "wt", "vs"))
+translate_sql(CONCAT("hp", "wt", "vs"))
+translate_sql(CRAZY_FUNCTION(mpg))
+```
+
+## Pipelines evaluated lazily
+
+```{r}
+title %>%
+  filter(title %like% '%Star Wars%',
+         kind_id == 1,
+         !is.na(production_year)) %>%
+  select(title, production_year) %>%
+  arrange(production_year)
+```
+
+## Weird-looking hybrid code
+
+```{r}
+title %>%
+  filter(title %like% '%Star Wars%',
+         kind_id == 1,
+         !is.na(production_year)) %>%
+  mutate(before_dash = SUBSTRING_INDEX(title, '-', 1)) %>%
+  select(before_dash, production_year) %>%
+  arrange(production_year)
+```
 
 # `DBI`
 
-## Supported platforms
+## `DBI`
+
+```{r, eval=FALSE, include=FALSE}
+library(webshot)
+webshot("https://github.com/r-dbi/DBI", file = "gfx/dbi.png", 
+        cliprect = c(1250, 0, 1000, 550))
+```
+
+<div class="centered">
+  [<img src="gfx/dbi.png" width="700px"/>](https://github.com/r-dbi/DBI)
+</div>
+
+## Supported databases
+
+<div class="double">
+`r-dbi`:
+
+- `RSQLite` [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/RSQLite)](https://cran.r-project.org/package=RSQLite)
+- `RMySQL` [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/RMySQL)](https://cran.r-project.org/package=RMySQL)
+- `odbc` [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/odbc)](https://cran.r-project.org/package=odbc)
+- `bigrquery` [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/bigrquery)](https://cran.r-project.org/package=bigrquery)
+- `RPostgres` [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/RPostgres)](https://cran.r-project.org/package=RPostgres)
+
+
+Others:
+
+- `RPostgreSQL` [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/RPostgreSQL)](https://cran.r-project.org/package=RPostgreSQL)
+- `MonetDBLite` [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/MonetDBLite)](https://cran.r-project.org/package=MonetDBLite)
+</br></br></br>
+
+</div>
+
+## `DBI` underneath `dbplyr`
+
+```{r}
+class(db)
+str(db)
+class(db$con)
+```
 
 ## Common interface
+
+```{r}
+dbListTables(db$con)
+dbListFields(db$con, "title")
+```
 
 ## `DBI` demo
 
 # Performance
 
-## `collect()`
 
-## Memory footprint
+## Recall that `tbl_sql`'s are tiny
 
+```{r}
+title <- tbl(db, "title")
+class(title)
+print(object.size(title), units = "Kb")
+```
 
+## Use `collect()` to bring into R
+
+```{r}
+title_lcl <- title %>%
+  filter(production_year == 1978) %>%
+  collect()
+class(title_lcl)
+print(object.size(title_lcl), units = "Mb")
+```
 
 ## Lazy evaluation
 
