@@ -2,35 +2,9 @@
 title: "Access Ensembl data"
 author: "Nicholas Horton (nhorton@amherst.edu) and Ben Baumer"
 date: "November 14, 2017"
-output: 
-  html_document:
-    fig_height: 3
-    fig_width: 5
-  pdf_document:
-    fig_height: 3
-    fig_width: 5
-  word_document:
-    fig_height: 3
-    fig_width: 5
+output: html_document
 ---
 
-
-```{r, include=FALSE}
-# Don't delete this chunk if you are using the mosaic package
-# This loads the mosaic and dplyr packages
-require(tidyverse)
-```
-
-```{r, include=FALSE}
-# Some customization.  You can alter or delete as desired (if you know what you are doing).
-
-# knitr settings to control how R chunks work.
-require(knitr)
-opts_chunk$set(
-  tidy=FALSE,     # display code as typed
-  size="small"    # slightly smaller font for code
-)
-```
 
 ## Introduction
 
@@ -68,7 +42,7 @@ A relevant paper on the topic of data management and databases in R can be found
 
 First we demonstrate how to access data using SQL (structured query language) commands and the `dbGetQuery()` function.  We begin by setting up a connection to the database.
 
-```{r}
+```{r, message=FALSE}
 library(tidyverse)
 library(RMySQL)
 con <- dbConnect(MySQL(), host = "ensembldb.ensembl.org",
@@ -81,7 +55,7 @@ Next a series of SQL queries can be sent to the database.  These return R datafr
 ```{r}
 ds <- dbGetQuery(con, "SHOW DATABASES")
 dim(ds)
-grep("scrofa", ds$Database, value=TRUE)
+grep("scrofa", ds$Database, value = TRUE)
 ```
 
 Let's focus on the `sus_scrofa_variation_79_102` database.  
@@ -91,9 +65,11 @@ dbGetQuery(con, "SHOW TABLES")
 dbGetQuery(con, "SELECT * FROM publication")
 dbGetQuery(con, "SELECT * FROM source")
 ds <- dbGetQuery(con, "SELECT * from individual LIMIT 1000")
-ds
 glimpse(ds)
-tally(~ description, data=ds)
+ds %>%
+  group_by(description) %>%
+  summarize(N = n()) %>%
+  arrange(desc(N))
 ```
 
 We can track down the publication which is associated with these data.
@@ -104,26 +80,25 @@ East Balkan Swine (EBS) Sus scrofa is the only aboriginal domesticated pig breed
 
 ## Accessing a database using dplyr commands
 
-Alternatively, a connection can be made to the server by creating a series of dplyr table objects.  
+Alternatively, a connection can be made to the server by creating a series of `dplyr` table objects.  
 
 ```{r warning=TRUE}
-library(tidyverse)      
 db <- src_mysql(dbname = "sus_scrofa_variation_79_102", 
                 host = "ensembldb.ensembl.org", 
                 user = "anonymous",
                 port = 3306,
-                password="")
+                password = "")
 Allele <- tbl(db, "allele")
 ```
 
 #### Let's explore this table
 
-```{r}
+```{r, warning=FALSE}
 Allele %>% 
   head()
 ```
 
-```{r}
+```{r, warning=FALSE}
 Allele %>%
   group_by(allele_code_id) %>%
   summarize(meanfreq = mean(frequency), count = n())
