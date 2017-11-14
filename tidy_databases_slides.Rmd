@@ -65,13 +65,24 @@ shutter -w=.*data-transformation.* -s=100,100,300,300 -o select.png -e
 ## Philosophy
 
 - Each *verb* takes a data frame and returns a data frame
-    - (actually a `tbl_df`)
+    - actually a `tbl_df` (more on that later)
     - allows chaining with `%>%` (more on that later)
 - Idea: 
     - master a few simple commands
     - use your creativity to combine them
 - Cheat Sheet:
     - (https://www.rstudio.com/resources/cheatsheets/)
+
+## What is a tibble?
+
+<div class="double">
+<img src="http://hexb.in/hexagons/tibble.png" class="one-col-image">
+
+- object of class `tbl`
+- a re-imagining of a `data.frame`
+- it looks and acts like a `data.frame`
+- `tidyverse` works with tibbles
+</div>
 
 ## `select()`: take a subset of the **columns** 
 
@@ -99,13 +110,13 @@ shutter -w=.*data-transformation.* -s=100,100,300,300 -o select.png -e
 </div>
 
 
-## `summarize()`: collapse into **a single row**
+## `summarize()`: collapse to **a single row**
 
 <div class="centered">
   <img src="gfx/summarise.png" width="700px"/>
 </div>
 
-## `group_by()`: apply operations to groups
+## `group_by()`: apply to groups
 
 <div class="centered">
   <img src="gfx/group_by.png" width="700px"/>
