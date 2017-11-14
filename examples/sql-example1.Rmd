@@ -1,6 +1,6 @@
 ---
 title: "Access Wideband Audiology Immitance database using R and dplyr"
-author: "Nicholas Horton (nhorton@amherst.edu)"
+author: "Nicholas Horton (nhorton@amherst.edu) and Ben Baumer"
 date: "November 14, 2017"
 output: 
   pdf_document:
@@ -44,7 +44,7 @@ A relevant paper on the topic of data management and databases in R can be found
 
 ## Accessing data from a database using SQL commands
 
-First I will demonstrate how to access data using SQL (structured query language) commands and the `dbGetQuery()` function.  We begin by setting up a connection to the database.
+First we demonstrate how to access data using SQL (structured query language) commands and the `dbGetQuery()` function.  We begin by setting up a connection to the database.
 
 ```{r}
 library(mosaic)
