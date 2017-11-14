@@ -351,6 +351,49 @@ title %>%
   arrange(production_year)
 ```
 
+## Why `dplyr` vs. SQL?
+
+<div class="double">
+R + `dplyr` good at:
+
+- fitting models
+- plotting
+- wrangling data of all kinds
+- working with small data
+- being an *interface to SQL*
+
+
+
+SQL good at:
+
+- storage and retrieval
+- medium-to-big data
+- multi-user, asyncronous access
+- serving institutional needs
+- web/mobile apps
+</div>
+
+## Data size for a single user
+
+<style>
+.storage {
+   float: left;
+}
+</style>
+
+<div class="storage"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Memory_module_DDRAM_20-03-2006.jpg/1200px-Memory_module_DDRAM_20-03-2006.jpg" width="250px"></div>
+
+<div class="storage"><img src="http://www.karbosguide.com/books/pcarchitecture/images/893.jpg" width="250px"></div>
+
+<div><img src="https://6lli539m39y3hpkelqsm3c2fg-wpengine.netdna-ssl.com/wp-content/uploads/2012/03/appro_supercomputers.jpg" width="250px"></div>
+
+
+"Size" | size | hardware | software
+-------|------|----------|-----
+small  | < several GB | RAM | R
+medium | several GB -- a few TB | hard disk | SQL
+big    | many TB or more | cluster | Spark?
+
 # `DBI`
 
 ## `DBI`
