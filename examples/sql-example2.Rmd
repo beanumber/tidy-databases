@@ -80,9 +80,9 @@ East Balkan Swine (EBS) Sus scrofa is the only aboriginal domesticated pig breed
 
 ## Accessing a database using dplyr commands
 
-Alternatively, a connection can be made to the server by creating a series of `dplyr` table objects.  
+Alternatively, a connection can be made to the server by creating a `dplyr` table objects for any give SQL table.  
 
-```{r warning=TRUE}
+```{r warning=FALSE}
 db <- src_mysql(dbname = "sus_scrofa_variation_79_102", 
                 host = "ensembldb.ensembl.org", 
                 user = "anonymous",
