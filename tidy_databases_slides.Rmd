@@ -628,7 +628,7 @@ print(object.size(old_movies_local), units = "Mb")
 <div class="double">
 - Github repo:  
   https://github.com/beanumber/tidy-databases
-- [these slides](https://beanumber.github.io/tidy-databases/tidy_databases_slides.html)
+- [these slides](http://www.science.smith.edu/~bbaumer/talks/tidy_databases/tidy_databases_slides.html)
 - sql-example1 ([Rmd](https://rawgit.com/beanumber/tidy-databases/master/examples/sql-example1.Rmd) |  [HTML](http://htmlpreview.github.io/?https://github.com/beanumber/tidy-databases/blob/master/examples/sql-example1.html) )
 - sql-example2 ( [Rmd](https://rawgit.com/beanumber/tidy-databases/master/examples/sql-example2.Rmd) | [HTML](http://htmlpreview.github.io/?https://github.com/beanumber/tidy-databases/blob/master/examples/sql-example2.html) )
 - [Setting the stage for data science](http://chance.amstat.org/2015/04/setting-the-stage/): integration of data management and databases in statistics courses (CHANCE 2015), also https://arxiv.org/abs/1401.3269
