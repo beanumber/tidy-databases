@@ -37,30 +37,38 @@ opts_chunk$set(
 
 ## Introduction
 
-This document is intended to describe how to access data from a MySQL database using R.  It utilizes a database of XX
+This document is intended to describe how to access data from a MySQL database using R.  It utilizes a database of 
+
+The website at https://www.ensembl.org states:
+
+> Ensembl is a genome browser for vertebrate genomes that supports research in comparative genomics, evolution, sequence variation and transcriptional regulation. Ensembl annotate genes, computes multiple alignments, predicts regulatory function and collects disease data. Ensembl tools include BLAST, BLAT, BioMart and the Variant Effect Predictor (VEP) for all supported species.
 
 A relevant paper on the topic of data management and databases in R can be found at http://chance.amstat.org/2015/04/setting-the-stage.
 
 
 ## Accessing data from a database using SQL commands
 
-First I will demonstrate how to access data using SQL (structured query language) commands and the `dbGetQuery()` function.  We begin by setting up a connection to the database.
+First we demonstrate how to access data using SQL (structured query language) commands and the `dbGetQuery()` function.  We begin by setting up a connection to the database.
 
 ```{r}
 library(mosaic)
 library(RMySQL)
-con <- dbConnect(MySQL(), host = "scidb.smith.edu",
-                user = "waiuser", password = "smith_waiDB", 
-                dbname = "wai")
+con <- dbConnect(MySQL(), host = "ensembldb.ensembl.org",
+                user = "anonymous", password = "", 
+                port = 3306)
 ```
 
 Next a series of SQL queries can be sent to the database.  These return R dataframes.
 
 ```{r}
+ds <- dbGetQuery(con, "SHOW DATABASES")
+dim(ds)
+grep("scrofa", ds)
+dbGetQuery(con, "USE sus_scrofa_variation_79_102")
 dbGetQuery(con, "SHOW TABLES")
-dbGetQuery(con, "EXPLAIN PI_Info")
-ds <- dbGetQuery(con, "SELECT * from Measurements LIMIT 10")
-ds
+dbGetQuery(con, "SELECT * FROM publication")
+# ds <- dbGetQuery(con, "SELECT * from Measurements LIMIT 10")
+# ds
 ```
 
 ## Accessing a database using dplyr commands
