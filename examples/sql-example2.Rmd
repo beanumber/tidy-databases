@@ -3,10 +3,10 @@ title: "Access Ensembl data"
 author: "Nicholas Horton (nhorton@amherst.edu) and Ben Baumer"
 date: "November 14, 2017"
 output: 
-  pdf_document:
+  html_document:
     fig_height: 3
     fig_width: 5
-  html_document:
+  pdf_document:
     fig_height: 3
     fig_width: 5
   word_document:
@@ -18,14 +18,11 @@ output:
 ```{r, include=FALSE}
 # Don't delete this chunk if you are using the mosaic package
 # This loads the mosaic and dplyr packages
-require(mosaic)
+require(tidyverse)
 ```
 
 ```{r, include=FALSE}
 # Some customization.  You can alter or delete as desired (if you know what you are doing).
-
-# This changes the default colors in lattice plots.
-trellis.par.set(theme=theme.mosaic())  
 
 # knitr settings to control how R chunks work.
 require(knitr)
@@ -37,11 +34,32 @@ opts_chunk$set(
 
 ## Introduction
 
-This document is intended to describe how to access data from a MySQL database using R.  It utilizes a database of 
+This document is intended to describe how to access data from a MySQL database using R.  It utilizes a database of genetic information that has made available for analysis.
+
+
+#### Ensembl
 
 The website at https://www.ensembl.org states:
 
 > Ensembl is a genome browser for vertebrate genomes that supports research in comparative genomics, evolution, sequence variation and transcriptional regulation. Ensembl annotate genes, computes multiple alignments, predicts regulatory function and collects disease data. Ensembl tools include BLAST, BLAT, BioMart and the Variant Effect Predictor (VEP) for all supported species.
+
+The website provides a list of what one can do with Ensembl:
+
+- View genes along with other annotation along the chromosome
+- View alternative transcripts (including splice variants) for a gene
+- Explore homologues and phylogenetic trees across more than 40 species for any gene
+- Compare whole genome alignments and conserved regions across species
+- View microarray sequences that match to Ensembl genes
+- View ESTs, clones, mRNA and proteins for any chromosomal region
+- Examine single nucleotide polymorphisms (SNPs) for a gene or chromosomal region
+- View SNPs across strains (rat, mouse), populations (human), or even breeds (dog)
+- View positions and sequence of mRNA and protein that align with an Ensembl gene
+- Upload your own data
+- Use BLAST, or BLAT, a similar sequence alignment search tool, against any Ensembl
+genome
+- Export sequence, or create a table of gene information with BioMart
+
+#### Background on databases in R
 
 A relevant paper on the topic of data management and databases in R can be found at http://chance.amstat.org/2015/04/setting-the-stage.
 
@@ -51,69 +69,65 @@ A relevant paper on the topic of data management and databases in R can be found
 First we demonstrate how to access data using SQL (structured query language) commands and the `dbGetQuery()` function.  We begin by setting up a connection to the database.
 
 ```{r}
-library(mosaic)
+library(tidyverse)
 library(RMySQL)
 con <- dbConnect(MySQL(), host = "ensembldb.ensembl.org",
                 user = "anonymous", password = "", 
                 port = 3306)
 ```
 
-Next a series of SQL queries can be sent to the database.  These return R dataframes.
+Next a series of SQL queries can be sent to the database.  These return R dataframes.  Let's start by seeing what databases are available.
 
 ```{r}
 ds <- dbGetQuery(con, "SHOW DATABASES")
 dim(ds)
-grep("scrofa", ds)
-dbGetQuery(con, "USE sus_scrofa_variation_79_102")
+grep("scrofa", ds$Database, value=TRUE)
+```
+
+Let's focus on the `sus_scrofa_variation_79_102` database.  
+```{r warning=FALSE}
+dbGetQuery(con, "USE sus_scrofa_variation_79_102;")
 dbGetQuery(con, "SHOW TABLES")
 dbGetQuery(con, "SELECT * FROM publication")
-# ds <- dbGetQuery(con, "SELECT * from Measurements LIMIT 10")
-# ds
+dbGetQuery(con, "SELECT * FROM source")
+ds <- dbGetQuery(con, "SELECT * from individual LIMIT 1000")
+ds
+glimpse(ds)
+tally(~ description, data=ds)
 ```
+
+We can track down the publication which is associated with these data.
+
+https://www.ncbi.nlm.nih.gov/pubmed/25662601
+
+East Balkan Swine (EBS) Sus scrofa is the only aboriginal domesticated pig breed in Bulgaria and is distributed on the western coast of the Black Sea in Bulgaria. To reveal the breed's genetic characteristics, we analysed mitochondrial DNA (mtDNA) and Y chromosomal DNA sequences of EBS in Bulgaria. Nucleotide diversity (πn ) of the mtDNA control region, including two newly found haplotypes, in 54 EBS was higher (0.014 ± 0.007) compared with that of European (0.005 ± 0.003) and Asian (0.006 ± 0.003) domestic pigs and wild boar. The median-joining network based on the mtDNA control region showed that the EBS and wild boar in Bulgaria comprised mainly two major mtDNA clades, European clade E1 (61.3%) and Asian clade A (38.7%). The coexistence of two mtDNA clades in EBS in Bulgaria may be the relict of historical pig translocation. Among the Bulgarian EBS colonies, the geographical differences in distribution of two mtDNA clades (E1 and A) could be attributed to the source pig populations and/or historical crossbreeding with imported pigs. In addition, analysis of the Y chromosomal DNA sequences for the EBS revealed that all of the EBS had haplotype HY1, which is dominant in European domestic pigs.
 
 ## Accessing a database using dplyr commands
 
 Alternatively, a connection can be made to the server by creating a series of dplyr table objects.  
-```{r}
-library(mosaic)      
-db <- src_mysql(dbname = "wai", host = "scidb.smith.edu", user = "waiuser", 
-          password="smith_waiDB")
-Measurements <- tbl(db, "Measurements")
-PI_Info <- tbl(db, "PI_Info")
-Subject <- tbl(db, "Subject")
+
+```{r warning=TRUE}
+library(tidyverse)      
+db <- src_mysql(dbname = "sus_scrofa_variation_79_102", 
+                host = "ensembldb.ensembl.org", 
+                user = "anonymous",
+                port = 3306,
+                password="")
+Allele <- tbl(db, "allele")
 ```
 
-#### Let's explore the `PI_Info` table.
+#### Let's explore this table
+
 ```{r}
-PI_Info  %>% summarise(total = n())
-PI_Info %>% collect() %>% data.frame()   # collect() is a bad idea when dealing with large tables!
+Allele %>% 
+  head()
 ```
 
-#### Let's explore the `Subjects` table.
 ```{r}
-Subject  %>% summarise(total = n())
-Subject %>% collect()  # be careful with collect() with large tables!
+Allele %>%
+  group_by(allele_code_id) %>%
+  summarize(meanfreq = mean(frequency), count = n())
 ```
 
-#### Let's explore the `Measurements` table.
-```{r}
-Measurements %>% summarise(total = n())
-```
+Want to explore more?  See the tutorials at https://www.ensembl.org/info/website/tutorials/index.html
 
-#### Let's download the data from a given subject
-```{r}
-onesubj <- 
-  Measurements %>% 
-  filter(Identifier=="Rosowski_2012", Sub_Number==3) %>%
-  collect %>%
-  mutate(SessionNum = as.factor(Session))
-head(onesubj)
-```
-
-#### Finally we can plot the results
-```{r eval=TRUE, fig.height=6}
-onesubj <- mutate(onesubj, 
-  Ear=ifelse(Left_Ear==1, "Left", "Right"))
-ggplot(data = onesubj, aes(x = Freq, y = Absorbance)) + geom_point() +
-  aes(colour = Ear) + scale_x_log10() + labs(title="Absorbance by ear Rosowski subject 3")
-```
