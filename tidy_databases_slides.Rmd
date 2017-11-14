@@ -22,7 +22,7 @@ db <- dbConnect_scidb(dbname = "imdb")
 
 <img src="https://wallpapercave.com/wp/5U98bOE.jpg" class="cover">
 
-</br></br></br>
+</br></br></br></br>
 </br></br></br>
 
 <p class="white">
@@ -285,13 +285,15 @@ translate_sql(cyl %in% c(4, 6, 8))
 
 ```{r, message=FALSE}
 translate_sql(paste("hp", "wt", "vs"))
+
+# make sense
 translate_sql(CONCAT("hp", "wt", "vs"))
 translate_sql(CRAZY_FUNCTION(mpg))
 ```
 
 ## Pipelines evaluated lazily
 
-```{r}
+```{r lazy-pipeline}
 title %>%
   filter(title %like% '%Star Wars%',
          kind_id == 1,
@@ -302,7 +304,7 @@ title %>%
 
 ## Weird-looking hybrid code
 
-```{r}
+```{r hybrid}
 title %>%
   filter(title %like% '%Star Wars%',
          kind_id == 1,
@@ -361,6 +363,15 @@ dbListTables(db$con)
 dbListFields(db$con, "title")
 ```
 
+## Bringing data into R
+
+```{r}
+query <- "SELECT production_year, title
+          FROM title
+          WHERE title = 'Star Wars' AND kind_id = 1;"
+dbGetQuery(db$con, query)
+```
+
 ## `DBI` demo
 
 # Performance
@@ -368,7 +379,7 @@ dbListFields(db$con, "title")
 
 ## Recall that `tbl_sql`'s are tiny
 
-```{r}
+```{r tiny-tbl_sql}
 title <- tbl(db, "title")
 class(title)
 print(object.size(title), units = "Kb")
@@ -376,7 +387,7 @@ print(object.size(title), units = "Kb")
 
 ## Use `collect()` to bring into R
 
-```{r}
+```{r collect}
 title_lcl <- title %>%
   filter(production_year == 1978) %>%
   collect()
@@ -386,5 +397,21 @@ print(object.size(title_lcl), units = "Mb")
 
 ## Lazy evaluation
 
+Think before you select
 
-# Thank you!!
+# What next?
+
+## *Modern Data Science with R* 
+
+<div class="double">
+<img src="https://images.tandf.co.uk/common/jackets/amazon/978149872/9781498724487.jpg" class="one-col-image">
+
+- [CRC Press](https://www.crcpress.com/Modern-Data-Science-with-R/Baumer-Kaplan-Horton/p/book/9781498724487)
+- [Amazon](https://www.amazon.com/Modern-Data-Science-Download-Statistical/dp/1498724485)
+- (http://mdsr-book.github.io)
+    - sample chapters
+    - R Markdown examples
+    - exercise solutions
+</div>
+
+# Thank you!
