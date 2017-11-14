@@ -617,5 +617,14 @@ print(object.size(old_movies_local), units = "Mb")
 
 # [db.rstudio.com](http://db.rstudio.com/)
 
+## Github repo: https://github.com/beanumber/tidy-databases
+
+<div class="double">
+- [slides](https://github.com/beanumber/tidy-databases/blob/master/tidy_databases_slides.html)
+- [sql-example1.Rmd](https://rawgit.com/beanumber/tidy-databases/master/examples/sql-example1.Rmd) [sql-example1.html](https://github.com/beanumber/tidy-databases/blob/master/examples/sql-example1.html)
+- [sql-example2.Rmd](https://rawgit.com/beanumber/tidy-databases/master/examples/sql-example2.Rmd) [sql-example2.html](https://github.com/beanumber/tidy-databases/blob/master/examples/sql-example2.html)
+- [Setting the stage for data science](http://chance.amstat.org/2015/04/setting-the-stage/): integration of data management and databases in statistics courses (CHANCE 2015), also https://arxiv.org/abs/1401.3269
+
+</div>
 
 # Thank you!
