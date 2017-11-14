@@ -3,10 +3,10 @@ title: "Access Wideband Audiology Immitance database using R and dplyr"
 author: "Nicholas Horton (nhorton@amherst.edu) and Ben Baumer"
 date: "November 14, 2017"
 output: 
-  pdf_document:
+  html_document:
     fig_height: 3
     fig_width: 5
-  html_document:
+  pdf_document:
     fig_height: 3
     fig_width: 5
   word_document:
@@ -69,7 +69,7 @@ Alternatively, a connection can be made to the server by creating a series of dp
 ```{r}
 library(mosaic)      
 db <- src_mysql(dbname = "wai", host = "scidb.smith.edu", user = "waiuser", 
-          password="smith_waiDB")
+                password = "smith_waiDB")
 Measurements <- tbl(db, "Measurements")
 PI_Info <- tbl(db, "PI_Info")
 Subject <- tbl(db, "Subject")
@@ -77,13 +77,13 @@ Subject <- tbl(db, "Subject")
 
 #### Let's explore the `PI_Info` table.
 ```{r}
-PI_Info  %>% summarise(total = n())
+PI_Info %>% summarise(total = n())
 PI_Info %>% collect() %>% data.frame()   # collect() is a bad idea when dealing with large tables!
 ```
 
 #### Let's explore the `Subjects` table.
 ```{r}
-Subject  %>% summarise(total = n())
+Subject %>% summarise(total = n())
 Subject %>% collect()  # be careful with collect() with large tables!
 ```
 
@@ -96,7 +96,7 @@ Measurements %>% summarise(total = n())
 ```{r}
 onesubj <- 
   Measurements %>% 
-  filter(Identifier=="Rosowski_2012", Sub_Number==3) %>%
+  filter(Identifier == "Rosowski_2012", Sub_Number == 3) %>%
   collect %>%
   mutate(SessionNum = as.factor(Session))
 head(onesubj)
@@ -104,8 +104,10 @@ head(onesubj)
 
 #### Finally we can plot the results
 ```{r eval=TRUE, fig.height=6}
-onesubj <- mutate(onesubj, 
-  Ear=ifelse(Left_Ear==1, "Left", "Right"))
-ggplot(data = onesubj, aes(x = Freq, y = Absorbance)) + geom_point() +
-  aes(colour = Ear) + scale_x_log10() + labs(title="Absorbance by ear Rosowski subject 3")
+onesubj <- onesubj %>%
+  mutate(Ear = ifelse(Left_Ear == 1, "Left", "Right"))
+ggplot(data = onesubj, aes(x = Freq, y = Absorbance, colour = Ear)) + 
+  geom_point() +
+  scale_x_log10() + 
+  ggtitle("Absorbance by ear Rosowski subject 3")
 ```
