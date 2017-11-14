@@ -19,7 +19,7 @@ The `dplyr` package within R provides a flexible and powerful syntax for data wr
 
 ### Other resources
 
-- [Webinar slides](http://www.science.smith.edu/~bbaumer/talks/tidy_databases/tidy_databases_slides.html)
+- [Webinar slides](https://beanumber.github.io/tidy-databases/tidy_databases_slides.html)
 - [Setting the stage for data science](http://chance.amstat.org/2015/04/setting-the-stage/): integration of data management and databases in statistics courses (CHANCE 2015), also https://arxiv.org/abs/1401.3269
 - [Modern Data Science with R](http://mdsr-book.github.io/)
 - [R for Data Science](http://r4ds.had.co.nz/)
