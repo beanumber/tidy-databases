@@ -207,35 +207,18 @@ mtcars %>%
 
 # `dbplyr`
 
-## &nbsp;
+## A brief primer on SQL 
 
-<img src="https://pbs.twimg.com/media/C8Fm5dxWsAE5cPk.jpg" class="cover">
+<div class="double">
+<img src="http://www.freeiconspng.com/uploads/sql-file-icon-0.png" class="one-col-image">
 
-## `dplyr` + SQL connection
-
-- `dplyr` can access a SQL database directly
-- Instead of `tbl_df`, you have a `tbl_sql`
-- Data is stored and processed in SQL
-    - Tiny memory footprint in R
-- **Lazy evaluation**
-    - server-side processing
-    - `dplyr` to SQL translation via `show_query()`
-
-## Example: `tbl_sql`
-
-```{r}
-db <- src_mysql(db = "imdb", host = "scidb.smith.edu",
-                user = "mth292", password = "RememberPi")
-title <- tbl(db, "title")
-class(title)
-print(object.size(title), units = "Kb")
-```
-
-## `tbl_sql` works just like a `tbl_df`
-
-```{r}
-title
-```
+- SQL is not just one thing
+    - MySQL, PostgreSQL, SQLite
+    - Oracle, Big Query, Vertica
+- Theory developed in 1970s (E.F. Codd)
+- Ingres implemented mid-1970s
+- robust, time-tested, well understood
+</div>
 
 
 ## `dplyr` <-> SQL
@@ -269,6 +252,40 @@ ORDER BY N desc
 LIMIT 0, 10;
 ```
 </div>
+
+## &nbsp;
+
+<img src="https://pbs.twimg.com/media/C8Fm5dxWsAE5cPk.jpg" class="cover">
+
+
+
+## `dbplyr` = `dplyr` + SQL connection
+
+- `dplyr` can access a SQL database directly
+- Instead of `tbl_df`, you have a `tbl_sql`
+- Data is stored and processed in SQL
+    - Tiny memory footprint in R
+- **Lazy evaluation**
+    - server-side processing
+    - `dplyr` to SQL translation via `show_query()`
+
+
+## Example: `tbl_sql`
+
+```{r}
+db <- src_mysql(db = "imdb", host = "scidb.smith.edu",
+                user = "mth292", password = "RememberPi")
+title <- tbl(db, "title")
+class(title)
+print(object.size(title), units = "Kb")
+```
+
+## `tbl_sql` works just like a `tbl_df`
+
+```{r}
+title
+```
+
 
 
 ## Example: `show_query()`
