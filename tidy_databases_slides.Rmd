@@ -54,13 +54,24 @@ November 15, 2017</br>
 shutter -w=.*data-transformation.* -s=100,100,300,300 -o select.png -e
 ```
 
-## The Five Verbs
+## `dplyr` highlights
+
+<div class="double">
+The Five Verbs
 
 - `select()`
 - `filter()`
 - `mutate()`
 - `arrange()`
-- `summarize()` (esp. with `group_by()`)
+- `summarize()` 
+
+Plus:
+
+- `group_by()`
+- `rename()`
+- `inner_join()`, `left_join()`, etc.
+- `do()`
+</div>
 
 ## Philosophy
 
@@ -72,6 +83,10 @@ shutter -w=.*data-transformation.* -s=100,100,300,300 -o select.png -e
     - use your creativity to combine them
 - Cheat Sheet:
     - (https://www.rstudio.com/resources/cheatsheets/)
+
+## &nbsp; { .fullpage .white }
+
+<img src="gfx/dplyr_cheatsheet.png" class="cover">
 
 ## What is a tibble?
 
@@ -202,7 +217,7 @@ foo_foo %>%
 
 (https://github.com/hadley/r4ds/blob/master/pipes.Rmd)
 
-## For example
+## Example: fuel economy
 
 ```{r}
 mtcars %>%
@@ -213,7 +228,20 @@ mtcars %>%
   arrange(desc(mean_mpg))
 ```
 
-## `dplyr` demo
+## Example: the 300-300 club
+
+```{r}
+library(Lahman)
+Batting %>%
+  group_by(playerID) %>%
+  summarize(span = paste(min(yearID), max(yearID), sep = "-"), 
+            career_HR = sum(HR), career_SB = sum(SB)) %>%
+  filter(career_HR >= 300, career_SB >= 300) %>%
+  left_join(Master, by = "playerID") %>%
+  mutate(player_name = paste(nameLast, nameFirst, sep = ", ")) %>%
+  select(player_name, span, career_HR, career_SB) %>%
+  arrange(desc(career_HR))
+```
 
 
 # `dbplyr`
@@ -276,36 +304,44 @@ LIMIT 0, 10;
 - Instead of `tbl_df`, you have a `tbl_sql`
 - Data is stored and processed in SQL
     - Tiny memory footprint in R
-- **Lazy evaluation**
+    - **Lazy evaluation**
     - server-side processing
-    - `dplyr` to SQL translation via `show_query()`
+- `dplyr` to SQL translation via `show_query()`
 
 
-## Example: `tbl_sql`
+## Example: connect to remote IMDB mirror
 
 ```{r}
 db <- src_mysql(db = "imdb", host = "scidb.smith.edu",
                 user = "mth292", password = "RememberPi")
 title <- tbl(db, "title")
-class(title)
-print(object.size(title), units = "Kb")
-```
-
-## `tbl_sql` works just like a `tbl_df`
-
-```{r}
 title
 ```
 
+## `title` contains 4.6 million rows, but...
 
+- ...it takes up almost no space
+
+```{r}
+print(object.size(title), units = "Kb")
+```
+
+- `title` looks like a `data.frame` but...
+
+```{r}
+class(title)
+```
+
+- ...it's not actually a `data.frame`
 
 ## Example: `show_query()`
 
 ```{r}
-title %>%
-  filter(title == 'Star Wars', kind_id == 1) %>%
-  select(production_year, title) %>%
-  show_query()
+star_wars <- title %>%
+  filter(title == "Star Wars", kind_id == 1) %>%
+  select(production_year, title)
+star_wars
+show_query(star_wars)
 ```
 
 ## Translation of basic functions
@@ -321,14 +357,17 @@ translate_sql(cyl %in% c(4, 6, 8))
 ## Code pass-thru of other functions
 
 ```{r, message=FALSE}
+# no PASTE() in SQL
 translate_sql(paste("hp", "wt", "vs"))
 
-# make sense
+# works, but no CONCAT() in R
 translate_sql(CONCAT("hp", "wt", "vs"))
+
+# nonsense
 translate_sql(CRAZY_FUNCTION(mpg))
 ```
 
-## Pipelines evaluated lazily
+## Fine-looking R code
 
 ```{r lazy-pipeline}
 title %>%
@@ -368,7 +407,7 @@ SQL good at:
 
 - storage and retrieval
 - medium-to-big data
-- multi-user, asyncronous access
+- multi-user, asynchronous access
 - serving institutional needs
 - web/mobile apps
 </div>
@@ -451,7 +490,16 @@ dbListTables(db$con)
 dbListFields(db$con, "title")
 ```
 
-## Bringing data into R
+## 3 ways to bring SQL data into R
+
+#. `dbplyr`
+    - via a `tbl_sql` (see previous examples)
+#. `DBI`
+    - via `dbGetQuery()`
+#. `rmarkdown` 
+    - via an SQL chunk
+
+## Using `dbGetQuery()`
 
 ```{r}
 query <- "SELECT production_year, title
@@ -460,7 +508,10 @@ query <- "SELECT production_year, title
 dbGetQuery(db$con, query)
 ```
 
-## Using `output.var`
+- No `dplyr` pipeline
+- Write SQL as a character string and pass it
+
+## Using `rmarkdown`
 
 ```{sql, eval=FALSE}
 # ```{sql, connection=db$con, output.var = "mydataframe"}
@@ -470,11 +521,21 @@ dbGetQuery(db$con, query)
 # ```
 ```
 
+```{sql, connection = db$con, output.var = "mydataframe", include=FALSE}
+SELECT production_year, title
+FROM title
+WHERE title = 'Star Wars' AND kind_id = 1;
+```
 
-## `DBI` demo
+- Instead of R chunk, SQL chunk
+- `connection` talks to database
+- `output.var` stores the result
+
+```{r}
+head(mydataframe)
+```
 
 # Performance
-
 
 ## Recall that `tbl_sql`'s are tiny
 
@@ -484,19 +545,35 @@ class(title)
 print(object.size(title), units = "Kb")
 ```
 
+## Pipelines are evaluated lazily
+
+```{r}
+old_movies <- title %>%
+  filter(production_year < 1950,
+         kind_id == 1)
+class(old_movies)
+dim(old_movies)
+print(object.size(old_movies), units = "Kb")
+```
+
 ## Use `collect()` to bring into R
 
 ```{r collect}
-title_lcl <- title %>%
-  filter(production_year == 1978) %>%
+old_movies_local <- old_movies %>%
   collect()
-class(title_lcl)
-print(object.size(title_lcl), units = "Mb")
+class(old_movies_local)
+dim(old_movies_local)
+print(object.size(old_movies_local), units = "Mb")
 ```
 
 ## Lazy evaluation
 
-Think before you select
+- Pipelines that don't ask for data
+    - evaluated fast
+- Processing tiggered when data is needed
+    - `print()`, `head()`, `glimpse()`, etc.
+    - plotting
+    - `collect()`
 
 # What next?
 
@@ -535,8 +612,7 @@ Think before you select
     - Garrett Grolemund
 </div>
 
-## Links
+# [db.rstudio.com](http://db.rstudio.com/)
 
-- (http://db.rstudio.com/)
 
 # Thank you!
