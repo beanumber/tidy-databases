@@ -1,0 +1,111 @@
+---
+title: "Access Ensembl data"
+author: "Nicholas Horton (nhorton@amherst.edu) and Ben Baumer"
+date: "November 14, 2017"
+output: 
+  pdf_document:
+    fig_height: 3
+    fig_width: 5
+  html_document:
+    fig_height: 3
+    fig_width: 5
+  word_document:
+    fig_height: 3
+    fig_width: 5
+---
+
+
+```{r, include=FALSE}
+# Don't delete this chunk if you are using the mosaic package
+# This loads the mosaic and dplyr packages
+require(mosaic)
+```
+
+```{r, include=FALSE}
+# Some customization.  You can alter or delete as desired (if you know what you are doing).
+
+# This changes the default colors in lattice plots.
+trellis.par.set(theme=theme.mosaic())  
+
+# knitr settings to control how R chunks work.
+require(knitr)
+opts_chunk$set(
+  tidy=FALSE,     # display code as typed
+  size="small"    # slightly smaller font for code
+)
+```
+
+## Introduction
+
+This document is intended to describe how to access data from a MySQL database using R.  It utilizes a database of XX
+
+A relevant paper on the topic of data management and databases in R can be found at http://chance.amstat.org/2015/04/setting-the-stage.
+
+
+## Accessing data from a database using SQL commands
+
+First I will demonstrate how to access data using SQL (structured query language) commands and the `dbGetQuery()` function.  We begin by setting up a connection to the database.
+
+```{r}
+library(mosaic)
+library(RMySQL)
+con <- dbConnect(MySQL(), host = "scidb.smith.edu",
+                user = "waiuser", password = "smith_waiDB", 
+                dbname = "wai")
+```
+
+Next a series of SQL queries can be sent to the database.  These return R dataframes.
+
+```{r}
+dbGetQuery(con, "SHOW TABLES")
+dbGetQuery(con, "EXPLAIN PI_Info")
+ds <- dbGetQuery(con, "SELECT * from Measurements LIMIT 10")
+ds
+```
+
+## Accessing a database using dplyr commands
+
+Alternatively, a connection can be made to the server by creating a series of dplyr table objects.  
+```{r}
+library(mosaic)      
+db <- src_mysql(dbname = "wai", host = "scidb.smith.edu", user = "waiuser", 
+          password="smith_waiDB")
+Measurements <- tbl(db, "Measurements")
+PI_Info <- tbl(db, "PI_Info")
+Subject <- tbl(db, "Subject")
+```
+
+#### Let's explore the `PI_Info` table.
+```{r}
+PI_Info  %>% summarise(total = n())
+PI_Info %>% collect() %>% data.frame()   # collect() is a bad idea when dealing with large tables!
+```
+
+#### Let's explore the `Subjects` table.
+```{r}
+Subject  %>% summarise(total = n())
+Subject %>% collect()  # be careful with collect() with large tables!
+```
+
+#### Let's explore the `Measurements` table.
+```{r}
+Measurements %>% summarise(total = n())
+```
+
+#### Let's download the data from a given subject
+```{r}
+onesubj <- 
+  Measurements %>% 
+  filter(Identifier=="Rosowski_2012", Sub_Number==3) %>%
+  collect %>%
+  mutate(SessionNum = as.factor(Session))
+head(onesubj)
+```
+
+#### Finally we can plot the results
+```{r eval=TRUE, fig.height=6}
+onesubj <- mutate(onesubj, 
+  Ear=ifelse(Left_Ear==1, "Left", "Right"))
+ggplot(data = onesubj, aes(x = Freq, y = Absorbance)) + geom_point() +
+  aes(colour = Ear) + scale_x_log10() + labs(title="Absorbance by ear Rosowski subject 3")
+```
