@@ -46,7 +46,7 @@ November 15, 2017</br>
 
 ## &nbsp; { .white }
 
-<img src="https://rviews.rstudio.com/post/2017-05-11-databases-using-r_files/today.png" class="cover">
+<img src="http://db.rstudio.com/homepage/interact.png" class="cover">
 
 # `dplyr`
 
@@ -337,6 +337,14 @@ webshot("https://github.com/r-dbi/DBI", file = "gfx/dbi.png",
   [<img src="gfx/dbi.png" width="700px"/>](https://github.com/r-dbi/DBI)
 </div>
 
+## &nbsp;
+
+<img src="http://db.rstudio.com/homepage/open-source.png" class="cover">
+
+## &nbsp;
+
+<img src="http://db.rstudio.com/homepage/commercial.png" class="cover">
+
 ## Supported databases
 
 <div class="double">
@@ -381,6 +389,17 @@ query <- "SELECT production_year, title
 dbGetQuery(db$con, query)
 ```
 
+## Using `output.var`
+
+```{sql, eval=FALSE}
+# ```{sql, connection=db$con, output.var = "mydataframe"}
+# SELECT production_year, title
+# FROM title
+# WHERE title = 'Star Wars' AND kind_id = 1;
+# ```
+```
+
+
 ## `DBI` demo
 
 # Performance
@@ -422,5 +441,31 @@ Think before you select
     - R Markdown examples
     - exercise solutions
 </div>
+
+## *R for Data Science*
+
+<div class="double">
+- (http://r4ds.had.co.nz/)
+- free, online
+- open source, written in `bookdown`
+- Garrett Grolemund and Hadley Wickham
+
+<img src="http://r4ds.had.co.nz/cover.png" class="one-col-image">
+</div>
+
+## DataCamp
+
+<div class="double">
+<img src="https://assets.datacamp.com/production/course_1946/shields/original/shield_image_course_1946_20171031-210-qbhai7?1509472890" class="one-col-image">
+
+- Intro to SQL for Data Science
+    - Nick Carchedi
+- Data Manipulation in R with `dplyr`
+    - Garrett Grolemund
+</div>
+
+## Links
+
+- (http://db.rstudio.com/)
 
 # Thank you!
