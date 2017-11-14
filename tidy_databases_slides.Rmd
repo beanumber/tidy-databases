@@ -31,6 +31,15 @@ Ben Baumer & Nick Horton</br>
 November 15, 2017</br>
 </p>
 
+
+## Map of this webinar
+
+#. review key idioms for data wrangling with `dplyr`
+#. introduce the backend interfaces for common database systems
+#. provide examples of how the `dplyr` engine translates a data pipeline
+#. discuss common misconceptions and performance issues
+#. provide pointers on how to learn more
+
 ## &nbsp; { .white }
 
 <img src="https://lsru.github.io/tv_course/img/01_tidyverse_data_science.png" class="cover">
