@@ -142,9 +142,19 @@ Plus:
 
 # The pipe
 
-## `magrittr`
+## The pipe
+
+<div class="double">
 
 <img src="https://d21ii91i3y6o6h.cloudfront.net/gallery_images/from_proof/3632/small/1419844831/magrittr.png" class="cover"/>
+- Provided by `magrittr` package
+- Inspired by pipe (`|`) in UNIX
+
+<img src="https://upload.wikimedia.org/wikipedia/en/b/b9/MagrittePipe.jpg" class="one-col-image">
+- [The Treachery of Images](https://en.wikipedia.org/wiki/The_Treachery_of_Images)
+- Rene Magritte, 1929
+
+</div>
 
 ## Aside: `magrittr`
 
