@@ -94,8 +94,7 @@ Measurements %>% summarise(total = n())
 
 #### Let's download the data from a given subject
 ```{r}
-onesubj <- 
-  Measurements %>% 
+onesubj <- Measurements %>% 
   filter(Identifier == "Rosowski_2012", Sub_Number == 3) %>%
   collect %>%
   mutate(SessionNum = as.factor(Session))
