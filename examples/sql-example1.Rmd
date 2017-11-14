@@ -7,7 +7,7 @@ output: html_document
 
 ## Introduction
 
-This document is intended to describe how to access data from a MySQL database using R.  It utilizes a database of wideband acoustic immitance variables from humans with normal hearing (see https://projectreporter.nih.gov/project_info_description.cfm?aid=8769352&icde=30039221&ddparam=&ddvalue=&ddsub=&cr=10&csb=default&cs=ASC for more details).
+This document is intended to describe how to access data from a MySQL database using R.  It utilizes a database of wideband acoustic immitance variables from humans with normal hearing (see http://www.science.smith.edu/wai-database/ and https://projectreporter.nih.gov/project_info_description.cfm?aid=8769352&icde=30039221&ddparam=&ddvalue=&ddsub=&cr=10&csb=default&cs=ASC for more details).
 
 A relevant paper on the topic of data management and databases in R can be found at http://chance.amstat.org/2015/04/setting-the-stage.
 
@@ -16,7 +16,7 @@ A relevant paper on the topic of data management and databases in R can be found
 
 First we demonstrate how to access data using SQL (structured query language) commands and the `dbGetQuery()` function.  We begin by setting up a connection to the database.
 
-```{r, message=FALSE}
+```{r, warning=FALSE, message=FALSE}
 library(tidyverse)
 library(RMySQL)
 con <- dbConnect(MySQL(), host = "scidb.smith.edu",

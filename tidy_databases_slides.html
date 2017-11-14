@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Databases in the tidyverse</title>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="tidy_databases_slides_files/rmdshower/node_modules/shower-ribbon/styles/screen-4x3.css">
+  <link rel="stylesheet" href="tidy_databases_slides_files/rmdshower/style-common.css">
+  <link rel="stylesheet" href="tidy_databases_slides_files/rmdshower/style-ribbon.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.js"></script>
+  <script src="tidy_databases_slides_files/rmdshower/auto-render.min.js" type="text/javascript"></script>
+  
+  
+    <style type="text/css">
+   div.sourceCode { overflow-x: auto; }
+   table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+     margin: 0; padding: 0; vertical-align: baseline; border: none; }
+   table.sourceCode { width: 100%; line-height: 100%; }
+   td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+   td.sourceCode { padding-left: 5px; }
+   code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+   code > span.dt { color: #902000; } /* DataType */
+   code > span.dv { color: #40a070; } /* DecVal */
+   code > span.bn { color: #40a070; } /* BaseN */
+   code > span.fl { color: #40a070; } /* Float */
+   code > span.ch { color: #4070a0; } /* Char */
+   code > span.st { color: #4070a0; } /* String */
+   code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+   code > span.ot { color: #007020; } /* Other */
+   code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+   code > span.fu { color: #06287e; } /* Function */
+   code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+   code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+   code > span.cn { color: #880000; } /* Constant */
+   code > span.sc { color: #4070a0; } /* SpecialChar */
+   code > span.vs { color: #4070a0; } /* VerbatimString */
+   code > span.ss { color: #bb6688; } /* SpecialString */
+   code > span.im { } /* Import */
+   code > span.va { color: #19177c; } /* Variable */
+   code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+   code > span.op { color: #666666; } /* Operator */
+   code > span.bu { } /* BuiltIn */
+   code > span.ex { } /* Extension */
+   code > span.pp { color: #bc7a00; } /* Preprocessor */
+   code > span.at { color: #7d9029; } /* Attribute */
+   code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+   code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+   code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+   code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+  </style>
+  
+  
+  
+</head>
+
+<body class="shower list">
+
+  <header class="caption">
+    <h1>Databases in the tidyverse</h1>
+    <p>Ben Baumer and Nick Horton</p>
+  </header>
+
+    
+  
+<section id="databases-in-the-tidyverse" class="slide level2 white">
+<h2>Databases in the tidyverse</h2>
+<p><img src="https://wallpapercave.com/wp/5U98bOE.jpg" class="cover"></p>
+<p></br></br></br></br> </br></br></br></p>
+<p class="white">
+ASA Webinar</br> Ben Baumer &amp; Nick Horton</br> November 15, 2017</br>
+</p>
+</section>
+<section id="map-of-this-webinar" class="slide level2">
+<h2>Map of this webinar</h2>
+<ol>
+<li>review key idioms for data wrangling with <code>dplyr</code></li>
+<li>introduce the backend interfaces for common database systems</li>
+<li>provide examples of how the <code>dplyr</code> engine translates a data pipeline</li>
+<li>discuss common misconceptions and performance issues</li>
+<li>provide pointers on how to learn more</li>
+</ol>
+</section>
+<section id="section" class="slide level2 white">
+<h2> </h2>
+<p><img src="https://lsru.github.io/tv_course/img/01_tidyverse_data_science.png" class="cover"></p>
+</section>
+<section id="section-1" class="slide level2 white">
+<h2> </h2>
+<p><img src="http://db.rstudio.com/homepage/interact.png" class="cover"></p>
+</section>
+<section id="dplyr" class="titleslide slide level1"><h2 class="shout"><code>dplyr</code></h2></section><section id="dplyr-highlights" class="slide level2">
+<h2><code>dplyr</code> highlights</h2>
+<div class="double">
+<p>The Five Verbs</p>
+<ul>
+<li><code>select()</code></li>
+<li><code>filter()</code></li>
+<li><code>mutate()</code></li>
+<li><code>arrange()</code></li>
+<li><code>summarize()</code></li>
+</ul>
+<p>Plus:</p>
+<ul>
+<li><code>group_by()</code></li>
+<li><code>rename()</code></li>
+<li><code>inner_join()</code>, <code>left_join()</code>, etc.</li>
+<li><code>do()</code></li>
+</ul>
+</div>
+</section><section id="philosophy" class="slide level2">
+<h2>Philosophy</h2>
+<ul>
+<li>Each <em>verb</em> takes a data frame and returns a data frame
+<ul>
+<li>actually a <code>tbl_df</code> (more on that later)</li>
+<li>allows chaining with <code>%&gt;%</code> (more on that later)</li>
+</ul></li>
+<li>Idea:
+<ul>
+<li>master a few simple commands</li>
+<li>use your creativity to combine them</li>
+</ul></li>
+<li>Cheat Sheet:
+<ul>
+<li>(<a href="https://www.rstudio.com/resources/cheatsheets/" class="uri">https://www.rstudio.com/resources/cheatsheets/</a>)</li>
+</ul></li>
+</ul>
+</section><section id="section-2" class="slide level2 fullpage white">
+<h2> </h2>
+<p><img src="gfx/dplyr_cheatsheet.png" class="cover"></p>
+</section><section id="what-is-a-tibble" class="slide level2">
+<h2>What is a tibble?</h2>
+<div class="double">
+<p><img src="http://hexb.in/hexagons/tibble.png" class="one-col-image"></p>
+<ul>
+<li>object of class <code>tbl</code></li>
+<li>a re-imagining of a <code>data.frame</code></li>
+<li>it looks and acts like a <code>data.frame</code></li>
+<li>but it’s even better…</li>
+<li><code>tidyverse</code> works with tibbles</li>
+</ul>
+</div>
+</section><section id="select-take-a-subset-of-the-columns" class="slide level2">
+<h2><code>select()</code>: take a subset of the <strong>columns</strong></h2>
+<div class="centered">
+<p><img src="gfx/select.png" width="700px"/></p>
+</div>
+</section><section id="filter-take-a-subset-of-the-rows" class="slide level2">
+<h2><code>filter()</code>: take a subset of the <strong>rows</strong></h2>
+<div class="centered">
+<p><img src="gfx/filter.png" width="700px"/></p>
+</div>
+</section><section id="mutate-add-or-modify-a-column" class="slide level2">
+<h2><code>mutate()</code>: add or modify a <strong>column</strong></h2>
+<div class="centered">
+<p><img src="gfx/mutate.png" width="700px"/></p>
+</div>
+</section><section id="arrange-sort-the-rows" class="slide level2">
+<h2><code>arrange()</code>: sort the <strong>rows</strong></h2>
+<div class="centered">
+<p><img src="gfx/arrange.png" width="700px"/></p>
+</div>
+</section><section id="summarize-collapse-to-a-single-row" class="slide level2">
+<h2><code>summarize()</code>: collapse to <strong>a single row</strong></h2>
+<div class="centered">
+<p><img src="gfx/summarise.png" width="700px"/></p>
+</div>
+</section><section id="group_by-apply-to-groups" class="slide level2">
+<h2><code>group_by()</code>: apply to groups</h2>
+<div class="centered">
+<p><img src="gfx/group_by.png" width="700px"/></p>
+</div>
+</section>
+<section id="the-pipe" class="titleslide slide level1"><h2 class="shout">The pipe</h2></section><section id="magrittr" class="slide level2">
+<h2><code>magrittr</code></h2>
+<p><img src="https://d21ii91i3y6o6h.cloudfront.net/gallery_images/from_proof/3632/small/1419844831/magrittr.png" class="cover"/></p>
+</section><section id="aside-magrittr" class="slide level2">
+<h2>Aside: <code>magrittr</code></h2>
+<div class="double">
+<p><img src="https://upload.wikimedia.org/wikipedia/en/b/b9/MagrittePipe.jpg" class="one-col-image"></p>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/The_Treachery_of_Images">The Treachery of Images</a></li>
+<li>Pipe (<code>%&gt;%</code>) is provided by <code>magrittr</code> package</li>
+<li>Inspired by pipe (<code>|</code>) in UNIX</li>
+</ul>
+</div>
+</section><section id="how-does-the-pipe-work" class="slide level2">
+<h2>How does the pipe work?</h2>
+<div class="centered">
+<p><img src="gfx/tidy-pipe.png" width="700px"/></p>
+</div>
+</section><section id="using-the-pipe" class="slide level2">
+<h2>Using the pipe</h2>
+<p>The expression</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mydata <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">verb</span>(arguments)</code></pre></div>
+<p>is the same as:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">verb</span>(mydata, arguments)</code></pre></div>
+<p>In effect, <code>function(x, args) = x %&gt;% function(args)</code>.</p>
+</section><section id="why-the-pipe" class="slide level2">
+<h2>Why the pipe?</h2>
+<p>Instead of having to read/write:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">select</span>(<span class="kw">filter</span>(<span class="kw">mutate</span>(data, args1), args2), args3)</code></pre></div>
+<p>You can do:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">data <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">mutate</span>(args1) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">filter</span>(args2) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">select</span>(args3)</code></pre></div>
+</section><section id="coding-little-bunny-foo-foo" class="slide level2">
+<h2>Coding Little Bunny Foo Foo</h2>
+<ul>
+<li>Nested form:</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">bop</span>(<span class="kw">scoop</span>(<span class="kw">hop</span>(foo_foo, <span class="dt">through =</span> forest), <span class="dt">up =</span> field_mice), <span class="dt">on =</span> head)</code></pre></div>
+<ul>
+<li>With pipes:</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">foo_foo <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">hop</span>(<span class="dt">through =</span> forest) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">scoop</span>(<span class="dt">up =</span> field_mouse) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">bop</span>(<span class="dt">on =</span> head)</code></pre></div>
+<p>(<a href="https://github.com/hadley/r4ds/blob/master/pipes.Rmd" class="uri">https://github.com/hadley/r4ds/blob/master/pipes.Rmd</a>)</p>
+</section><section id="example-fuel-economy" class="slide level2">
+<h2>Example: fuel economy</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mtcars <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">filter</span>(am <span class="op">==</span><span class="st"> </span><span class="dv">1</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">group_by</span>(cyl) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">summarize</span>(<span class="dt">num_models =</span> <span class="kw">n</span>(), 
+            <span class="dt">mean_mpg =</span> <span class="kw">mean</span>(mpg)) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">arrange</span>(<span class="kw">desc</span>(mean_mpg))</code></pre></div>
+<pre><code>## # A tibble: 3 x 3
+##     cyl num_models mean_mpg
+##   &lt;dbl&gt;      &lt;int&gt;    &lt;dbl&gt;
+## 1     4          8 28.07500
+## 2     6          3 20.56667
+## 3     8          2 15.40000</code></pre>
+</section><section id="example-the-300-300-club" class="slide level2">
+<h2>Example: the 300-300 club</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(Lahman)
+Batting <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">group_by</span>(playerID) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">summarize</span>(<span class="dt">span =</span> <span class="kw">paste</span>(<span class="kw">min</span>(yearID), <span class="kw">max</span>(yearID), <span class="dt">sep =</span> <span class="st">&quot;-&quot;</span>), 
+            <span class="dt">career_HR =</span> <span class="kw">sum</span>(HR), <span class="dt">career_SB =</span> <span class="kw">sum</span>(SB)) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">filter</span>(career_HR <span class="op">&gt;=</span><span class="st"> </span><span class="dv">300</span>, career_SB <span class="op">&gt;=</span><span class="st"> </span><span class="dv">300</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">left_join</span>(Master, <span class="dt">by =</span> <span class="st">&quot;playerID&quot;</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">player_name =</span> <span class="kw">paste</span>(nameLast, nameFirst, <span class="dt">sep =</span> <span class="st">&quot;, &quot;</span>)) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">select</span>(player_name, span, career_HR, career_SB) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">arrange</span>(<span class="kw">desc</span>(career_HR))</code></pre></div>
+<pre><code>## # A tibble: 8 x 4
+##       player_name      span career_HR career_SB
+##             &lt;chr&gt;     &lt;chr&gt;     &lt;int&gt;     &lt;int&gt;
+## 1    Bonds, Barry 1986-2007       762       514
+## 2 Rodriguez, Alex 1994-2016       696       329
+## 3    Mays, Willie 1951-1973       660       338
+## 4   Dawson, Andre 1976-1996       438       314
+## 5 Beltran, Carlos 1998-2016       421       312
+## 6    Bonds, Bobby 1968-1981       332       461
+## 7 Sanders, Reggie 1991-2007       305       304
+## 8   Finley, Steve 1989-2007       304       320</code></pre>
+</section>
+<section id="dbplyr" class="titleslide slide level1"><h2 class="shout"><code>dbplyr</code></h2></section><section id="a-brief-primer-on-sql" class="slide level2">
+<h2>A brief primer on SQL</h2>
+<div class="double">
+<p><img src="http://www.freeiconspng.com/uploads/sql-file-icon-0.png" class="one-col-image"></p>
+<ul>
+<li>SQL is not just one thing
+<ul>
+<li>MySQL, PostgreSQL, SQLite</li>
+<li>Oracle, Big Query, Vertica</li>
+</ul></li>
+<li>Theory developed in 1970s (E.F. Codd)</li>
+<li>Ingres implemented mid-1970s</li>
+<li>robust, time-tested, well understood</li>
+</ul>
+</div>
+</section><section id="dplyr---sql" class="slide level2">
+<h2><code>dplyr</code> &lt;-&gt; SQL</h2>
+<div class="double">
+<p><code>dplyr</code></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">table <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">filter</span>(field <span class="op">==</span><span class="st"> &quot;value&quot;</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">left_join</span>(lkup, 
+    <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">&quot;lkup_id&quot;</span> =<span class="st"> &quot;id&quot;</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">group_by</span>(year) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">summarize</span>(<span class="dt">N =</span> <span class="kw">sum</span>(<span class="dv">1</span>)) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">filter</span>(N <span class="op">&gt;</span><span class="st"> </span><span class="dv">100</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">arrange</span>(<span class="kw">desc</span>(N)) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">head</span>(<span class="dv">10</span>)</code></pre></div>
+<p>MySQL</p>
+<div class="sourceCode"><pre class="sourceCode sql"><code class="sourceCode sql"><span class="kw">SELECT</span>
+  <span class="dt">year</span>, <span class="fu">sum</span>(<span class="dv">1</span>) <span class="kw">as</span> N
+<span class="kw">FROM</span> <span class="kw">table</span> t
+<span class="kw">LEFT</span> <span class="kw">JOIN</span> lkup l
+  <span class="kw">ON</span> t.lkup_id = l.id
+<span class="kw">WHERE</span> field = <span class="ot">&quot;value&quot;</span>
+<span class="kw">GROUP</span> <span class="kw">BY</span> <span class="dt">year</span>
+<span class="kw">HAVING</span> N &gt; <span class="dv">100</span>
+<span class="kw">ORDER</span> <span class="kw">BY</span> N <span class="kw">desc</span>
+<span class="kw">LIMIT</span> <span class="dv">0</span>, <span class="dv">10</span>;</code></pre></div>
+</div>
+</section><section id="section-3" class="slide level2">
+<h2> </h2>
+<p><img src="https://pbs.twimg.com/media/C8Fm5dxWsAE5cPk.jpg" class="cover"></p>
+</section><section id="dbplyr-dplyr-sql-connection" class="slide level2">
+<h2><code>dbplyr</code> = <code>dplyr</code> + SQL connection</h2>
+<ul>
+<li><code>dplyr</code> can access a SQL database directly</li>
+<li>Instead of <code>tbl_df</code>, you have a <code>tbl_sql</code></li>
+<li>Data is stored and processed in SQL
+<ul>
+<li>Tiny memory footprint in R</li>
+<li><strong>Lazy evaluation</strong></li>
+<li>server-side processing</li>
+</ul></li>
+<li><code>dplyr</code> to SQL translation via <code>show_query()</code></li>
+</ul>
+</section><section id="example-connect-to-remote-imdb-mirror" class="slide level2">
+<h2>Example: connect to remote IMDB mirror</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">db &lt;-<span class="st"> </span><span class="kw">src_mysql</span>(<span class="dt">db =</span> <span class="st">&quot;imdb&quot;</span>, <span class="dt">host =</span> <span class="st">&quot;scidb.smith.edu&quot;</span>,
+                <span class="dt">user =</span> <span class="st">&quot;mth292&quot;</span>, <span class="dt">password =</span> <span class="st">&quot;RememberPi&quot;</span>)
+title &lt;-<span class="st"> </span><span class="kw">tbl</span>(db, <span class="st">&quot;title&quot;</span>)
+title</code></pre></div>
+<pre><code>## # Source:   table&lt;title&gt; [?? x 12]
+## # Database: mysql 5.5.57-0ubuntu0.14.04.1 [mth292@scidb.smith.edu:/imdb]
+##       id                                           title imdb_index
+##    &lt;int&gt;                                           &lt;chr&gt;      &lt;chr&gt;
+##  1 78460 Adults Recat to the Simpsons (30th Anniversary)       &lt;NA&gt;
+##  2 70273                                    (2016-05-18)       &lt;NA&gt;
+##  3 60105                                    (2014-04-11)       &lt;NA&gt;
+##  4 32120                                    (2008-05-01)       &lt;NA&gt;
+##  5 97554                                Schmölders Traum       &lt;NA&gt;
+##  6 57966                                          (#1.1)       &lt;NA&gt;
+##  7 76391                                     Anniversary       &lt;NA&gt;
+##  8 11952              Angus Black/Lester Barrie/DC Curry       &lt;NA&gt;
+##  9  1554                                     New Orleans       &lt;NA&gt;
+## 10 58442                                    Kiss Me Kate       &lt;NA&gt;
+## # ... with more rows, and 9 more variables: kind_id &lt;int&gt;,
+## #   production_year &lt;int&gt;, imdb_id &lt;int&gt;, phonetic_code &lt;chr&gt;,
+## #   episode_of_id &lt;int&gt;, season_nr &lt;int&gt;, episode_nr &lt;int&gt;,
+## #   series_years &lt;chr&gt;, md5sum &lt;chr&gt;</code></pre>
+</section><section id="title-contains-4.6-million-rows-but" class="slide level2">
+<h2><code>title</code> contains 4.6 million rows, but…</h2>
+<ul>
+<li>…it takes up almost no space</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(<span class="kw">object.size</span>(title), <span class="dt">units =</span> <span class="st">&quot;Kb&quot;</span>)</code></pre></div>
+<pre><code>## 3.8 Kb</code></pre>
+<ul>
+<li><code>title</code> looks like a <code>data.frame</code> but…</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">class</span>(title)</code></pre></div>
+<pre><code>## [1] &quot;tbl_dbi&quot;  &quot;tbl_sql&quot;  &quot;tbl_lazy&quot; &quot;tbl&quot;</code></pre>
+<ul>
+<li>…it’s not actually a <code>data.frame</code></li>
+</ul>
+</section><section id="example-show_query" class="slide level2">
+<h2>Example: <code>show_query()</code></h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">star_wars &lt;-<span class="st"> </span>title <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">filter</span>(title <span class="op">==</span><span class="st"> &quot;Star Wars&quot;</span>, kind_id <span class="op">==</span><span class="st"> </span><span class="dv">1</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">select</span>(production_year, title)
+star_wars</code></pre></div>
+<pre><code>## # Source:   lazy query [?? x 2]
+## # Database: mysql 5.5.57-0ubuntu0.14.04.1 [mth292@scidb.smith.edu:/imdb]
+##   production_year     title
+##             &lt;int&gt;     &lt;chr&gt;
+## 1            1977 Star Wars</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">show_query</span>(star_wars)</code></pre></div>
+<pre><code>## &lt;SQL&gt;
+## SELECT `production_year` AS `production_year`, `title` AS `title`
+## FROM `title`
+## WHERE ((`title` = &#39;Star Wars&#39;) AND (`kind_id` = 1.0))</code></pre>
+</section><section id="translation-of-basic-functions" class="slide level2">
+<h2>Translation of basic functions</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(dbplyr)
+<span class="kw">translate_sql</span>(<span class="kw">ceiling</span>(mpg))</code></pre></div>
+<pre><code>## &lt;SQL&gt; CEIL(&quot;mpg&quot;)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">translate_sql</span>(<span class="kw">mean</span>(mpg))</code></pre></div>
+<pre><code>## &lt;SQL&gt; avg(&quot;mpg&quot;) OVER ()</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">translate_sql</span>(cyl <span class="op">==</span><span class="st"> </span><span class="dv">4</span>)</code></pre></div>
+<pre><code>## &lt;SQL&gt; &quot;cyl&quot; = 4.0</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">translate_sql</span>(cyl <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="dv">4</span>, <span class="dv">6</span>, <span class="dv">8</span>))</code></pre></div>
+<pre><code>## &lt;SQL&gt; &quot;cyl&quot; IN (4.0, 6.0, 8.0)</code></pre>
+</section><section id="code-pass-thru-of-other-functions" class="slide level2">
+<h2>Code pass-thru of other functions</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># no PASTE() in SQL</span>
+<span class="kw">translate_sql</span>(<span class="kw">paste</span>(<span class="st">&quot;hp&quot;</span>, <span class="st">&quot;wt&quot;</span>, <span class="st">&quot;vs&quot;</span>))</code></pre></div>
+<pre><code>## &lt;SQL&gt; PASTE(&#39;hp&#39;, &#39;wt&#39;, &#39;vs&#39;)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># works, but no CONCAT() in R</span>
+<span class="kw">translate_sql</span>(<span class="kw">CONCAT</span>(<span class="st">&quot;hp&quot;</span>, <span class="st">&quot;wt&quot;</span>, <span class="st">&quot;vs&quot;</span>))</code></pre></div>
+<pre><code>## &lt;SQL&gt; CONCAT(&#39;hp&#39;, &#39;wt&#39;, &#39;vs&#39;)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># nonsense</span>
+<span class="kw">translate_sql</span>(<span class="kw">CRAZY_FUNCTION</span>(mpg))</code></pre></div>
+<pre><code>## &lt;SQL&gt; CRAZY_FUNCTION(&quot;mpg&quot;)</code></pre>
+</section><section id="fine-looking-r-code" class="slide level2">
+<h2>Fine-looking R code</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">title <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">filter</span>(title <span class="op">%like%</span><span class="st"> &#39;%Star Wars%&#39;</span>,
+         kind_id <span class="op">==</span><span class="st"> </span><span class="dv">1</span>,
+         <span class="op">!</span><span class="kw">is.na</span>(production_year)) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">select</span>(title, production_year) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">arrange</span>(production_year)</code></pre></div>
+<pre><code>## # Source:     lazy query [?? x 2]
+## # Database:   mysql 5.5.57-0ubuntu0.14.04.1 [mth292@scidb.smith.edu:/imdb]
+## # Ordered by: production_year
+##                                                title production_year
+##                                                &lt;chr&gt;           &lt;int&gt;
+##  1                                         Star Wars            1977
+##  2    Star Wars: Episode V - The Empire Strikes Back            1980
+##  3                                Star Wars Underoos            1980
+##  4        Star Wars: Episode VI - Return of the Jedi            1983
+##  5                             Tezukuri no Star Wars            1990
+##  6         Star Wars: Episode I - The Phantom Menace            1999
+##  7                             Star Wars Gangsta Rap            2000
+##  8                                 Star Wars Returns            2001
+##  9 Star Wars: Attack of the Clones - A Jigsaw Puzzle            2002
+## 10      Star Wars Episode V 1/2: The Han Solo Affair            2002
+## # ... with more rows</code></pre>
+</section><section id="weird-looking-hybrid-code" class="slide level2">
+<h2>Weird-looking hybrid code</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">title <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">filter</span>(title <span class="op">%like%</span><span class="st"> &#39;%Star Wars%&#39;</span>,
+         kind_id <span class="op">==</span><span class="st"> </span><span class="dv">1</span>,
+         <span class="op">!</span><span class="kw">is.na</span>(production_year)) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">before_dash =</span> <span class="kw">SUBSTRING_INDEX</span>(title, <span class="st">&#39;-&#39;</span>, <span class="dv">1</span>)) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">select</span>(before_dash, production_year) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">arrange</span>(production_year)</code></pre></div>
+<pre><code>## # Source:     lazy query [?? x 2]
+## # Database:   mysql 5.5.57-0ubuntu0.14.04.1 [mth292@scidb.smith.edu:/imdb]
+## # Ordered by: production_year
+##                                     before_dash production_year
+##                                           &lt;chr&gt;           &lt;int&gt;
+##  1                                    Star Wars            1977
+##  2                        Star Wars: Episode V             1980
+##  3                           Star Wars Underoos            1980
+##  4                       Star Wars: Episode VI             1983
+##  5                        Tezukuri no Star Wars            1990
+##  6                        Star Wars: Episode I             1999
+##  7                        Star Wars Gangsta Rap            2000
+##  8                            Star Wars Returns            2001
+##  9             Star Wars: Attack of the Clones             2002
+## 10 Star Wars Episode V 1/2: The Han Solo Affair            2002
+## # ... with more rows</code></pre>
+</section><section id="why-dplyr-vs.sql" class="slide level2">
+<h2>Why <code>dplyr</code> vs. SQL?</h2>
+<div class="double">
+<p>R + <code>dplyr</code> good at:</p>
+<ul>
+<li>fitting models</li>
+<li>plotting</li>
+<li>wrangling data of all kinds</li>
+<li>working with small data</li>
+<li>being an <em>interface to SQL</em></li>
+</ul>
+<p>SQL good at:</p>
+<ul>
+<li>storage and retrieval</li>
+<li>medium-to-big data</li>
+<li>multi-user, asynchronous access</li>
+<li>serving institutional needs</li>
+<li>web/mobile apps</li>
+</ul>
+</div>
+</section><section id="data-size-for-a-single-user" class="slide level2">
+<h2>Data size for a single user</h2>
+<style>
+.storage {
+   float: left;
+}
+</style>
+<div class="storage">
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Memory_module_DDRAM_20-03-2006.jpg/1200px-Memory_module_DDRAM_20-03-2006.jpg" width="250px">
+</div>
+<div class="storage">
+<img src="http://www.karbosguide.com/books/pcarchitecture/images/893.jpg" width="250px">
+</div>
+<div>
+<img src="https://6lli539m39y3hpkelqsm3c2fg-wpengine.netdna-ssl.com/wp-content/uploads/2012/03/appro_supercomputers.jpg" width="250px">
+</div>
+<table>
+<thead>
+<tr class="header">
+<th>“Size”</th>
+<th>size</th>
+<th>hardware</th>
+<th>software</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>small</td>
+<td>&lt; several GB</td>
+<td>RAM</td>
+<td>R</td>
+</tr>
+<tr class="even">
+<td>medium</td>
+<td>several GB – a few TB</td>
+<td>hard disk</td>
+<td>SQL</td>
+</tr>
+<tr class="odd">
+<td>big</td>
+<td>many TB or more</td>
+<td>cluster</td>
+<td>Spark?</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="dbi" class="titleslide slide level1"><h2 class="shout"><code>DBI</code></h2></section><section id="dbi-1" class="slide level2">
+<h2><code>DBI</code></h2>
+<div class="centered">
+<p><a href="https://github.com/r-dbi/DBI"><img src="gfx/dbi.png" width="800px"/></a></p>
+</div>
+</section><section id="section-4" class="slide level2">
+<h2> </h2>
+<p><img src="http://db.rstudio.com/homepage/open-source.png" class="cover"></p>
+</section><section id="section-5" class="slide level2">
+<h2> </h2>
+<p><img src="http://db.rstudio.com/homepage/commercial.png" class="cover"></p>
+</section><section id="supported-databases" class="slide level2">
+<h2>Supported databases</h2>
+<div class="double">
+<p><code>r-dbi</code>:</p>
+<ul>
+<li><code>RSQLite</code> <a href="https://cran.r-project.org/package=RSQLite"><img src="http://www.r-pkg.org/badges/version/RSQLite" alt="CRAN_Status_Badge" /></a></li>
+<li><code>RMySQL</code> <a href="https://cran.r-project.org/package=RMySQL"><img src="http://www.r-pkg.org/badges/version/RMySQL" alt="CRAN_Status_Badge" /></a></li>
+<li><code>odbc</code> <a href="https://cran.r-project.org/package=odbc"><img src="http://www.r-pkg.org/badges/version/odbc" alt="CRAN_Status_Badge" /></a></li>
+<li><code>bigrquery</code> <a href="https://cran.r-project.org/package=bigrquery"><img src="http://www.r-pkg.org/badges/version/bigrquery" alt="CRAN_Status_Badge" /></a></li>
+<li><code>RPostgres</code> <a href="https://cran.r-project.org/package=RPostgres"><img src="http://www.r-pkg.org/badges/version/RPostgres" alt="CRAN_Status_Badge" /></a></li>
+</ul>
+<p>Others:</p>
+<ul>
+<li><code>RPostgreSQL</code> <a href="https://cran.r-project.org/package=RPostgreSQL"><img src="http://www.r-pkg.org/badges/version/RPostgreSQL" alt="CRAN_Status_Badge" /></a></li>
+<li><code>MonetDBLite</code> <a href="https://cran.r-project.org/package=MonetDBLite"><img src="http://www.r-pkg.org/badges/version/MonetDBLite" alt="CRAN_Status_Badge" /></a> </br></br></br></li>
+</ul>
+</div>
+</section><section id="dbi-underneath-dbplyr" class="slide level2">
+<h2><code>DBI</code> underneath <code>dbplyr</code></h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">class</span>(db)</code></pre></div>
+<pre><code>## [1] &quot;src_dbi&quot; &quot;src_sql&quot; &quot;src&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">str</span>(db)</code></pre></div>
+<pre><code>## List of 2
+##  $ con  :Formal class &#39;MySQLConnection&#39; [package &quot;RMySQL&quot;] with 1 slot
+##   .. ..@ Id: int [1:2] 0 1
+##  $ disco:&lt;environment: 0x7fc63afd0a98&gt; 
+##  - attr(*, &quot;class&quot;)= chr [1:3] &quot;src_dbi&quot; &quot;src_sql&quot; &quot;src&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">class</span>(db<span class="op">$</span>con)</code></pre></div>
+<pre><code>## [1] &quot;MySQLConnection&quot;
+## attr(,&quot;package&quot;)
+## [1] &quot;RMySQL&quot;</code></pre>
+</section><section id="common-interface" class="slide level2">
+<h2>Common interface</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dbListTables</span>(db<span class="op">$</span>con)</code></pre></div>
+<pre><code>##  [1] &quot;aka_name&quot;        &quot;aka_title&quot;       &quot;cast_info&quot;      
+##  [4] &quot;char_name&quot;       &quot;comp_cast_type&quot;  &quot;company_name&quot;   
+##  [7] &quot;company_type&quot;    &quot;complete_cast&quot;   &quot;info_type&quot;      
+## [10] &quot;keyword&quot;         &quot;kind_type&quot;       &quot;link_type&quot;      
+## [13] &quot;movie_companies&quot; &quot;movie_info&quot;      &quot;movie_info_idx&quot; 
+## [16] &quot;movie_keyword&quot;   &quot;movie_link&quot;      &quot;name&quot;           
+## [19] &quot;person_info&quot;     &quot;role_type&quot;       &quot;title&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dbListFields</span>(db<span class="op">$</span>con, <span class="st">&quot;title&quot;</span>)</code></pre></div>
+<pre><code>##  [1] &quot;id&quot;              &quot;title&quot;           &quot;imdb_index&quot;     
+##  [4] &quot;kind_id&quot;         &quot;production_year&quot; &quot;imdb_id&quot;        
+##  [7] &quot;phonetic_code&quot;   &quot;episode_of_id&quot;   &quot;season_nr&quot;      
+## [10] &quot;episode_nr&quot;      &quot;series_years&quot;    &quot;md5sum&quot;</code></pre>
+</section><section id="ways-to-bring-sql-data-into-r" class="slide level2">
+<h2>3 ways to bring SQL data into R</h2>
+<ol>
+<li><code>dbplyr</code>
+<ul>
+<li>via a <code>tbl_sql</code> (see previous examples)</li>
+</ul></li>
+<li><code>DBI</code>
+<ul>
+<li>via <code>dbGetQuery()</code></li>
+</ul></li>
+<li><code>rmarkdown</code>
+<ul>
+<li>via an SQL chunk</li>
+</ul></li>
+</ol>
+</section><section id="using-dbgetquery" class="slide level2">
+<h2>Using <code>dbGetQuery()</code></h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">query &lt;-<span class="st"> &quot;SELECT production_year, title</span>
+<span class="st">          FROM title</span>
+<span class="st">          WHERE title = &#39;Star Wars&#39; AND kind_id = 1;&quot;</span>
+<span class="kw">dbGetQuery</span>(db<span class="op">$</span>con, query)</code></pre></div>
+<pre><code>##   production_year     title
+## 1            1977 Star Wars</code></pre>
+<ul>
+<li>No <code>dplyr</code> pipeline</li>
+<li>Write SQL as a character string and pass it</li>
+</ul>
+</section><section id="using-rmarkdown" class="slide level2">
+<h2>Using <code>rmarkdown</code></h2>
+<div class="sourceCode"><pre class="sourceCode sql"><code class="sourceCode sql"># ```{sql, connection=db$con, output.var = <span class="ot">&quot;mydataframe&quot;</span>}
+# <span class="kw">SELECT</span> production_year, title
+# <span class="kw">FROM</span> title
+# <span class="kw">WHERE</span> title = <span class="st">&#39;Star Wars&#39;</span> <span class="kw">AND</span> kind_id = <span class="dv">1</span>;
+# ```</code></pre></div>
+<ul>
+<li>Instead of R chunk, SQL chunk</li>
+<li><code>connection</code> talks to database</li>
+<li><code>output.var</code> stores the result</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(mydataframe)</code></pre></div>
+<pre><code>##   production_year     title
+## 1            1977 Star Wars</code></pre>
+</section>
+<section id="examples" class="titleslide slide level1"><h2 class="shout">Examples</h2></section></section>
+<section id="performance" class="titleslide slide level1"><h2 class="shout">Performance</h2></section><section id="recall-that-tbl_sqls-are-tiny" class="slide level2">
+<h2>Recall that <code>tbl_sql</code>’s are tiny</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">title &lt;-<span class="st"> </span><span class="kw">tbl</span>(db, <span class="st">&quot;title&quot;</span>)
+<span class="kw">class</span>(title)</code></pre></div>
+<pre><code>## [1] &quot;tbl_dbi&quot;  &quot;tbl_sql&quot;  &quot;tbl_lazy&quot; &quot;tbl&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(<span class="kw">object.size</span>(title), <span class="dt">units =</span> <span class="st">&quot;Kb&quot;</span>)</code></pre></div>
+<pre><code>## 3.8 Kb</code></pre>
+</section><section id="pipelines-are-evaluated-lazily" class="slide level2">
+<h2>Pipelines are evaluated lazily</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">old_movies &lt;-<span class="st"> </span>title <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">filter</span>(production_year <span class="op">&lt;</span><span class="st"> </span><span class="dv">1950</span>,
+         kind_id <span class="op">==</span><span class="st"> </span><span class="dv">1</span>)
+<span class="kw">class</span>(old_movies)</code></pre></div>
+<pre><code>## [1] &quot;tbl_dbi&quot;  &quot;tbl_sql&quot;  &quot;tbl_lazy&quot; &quot;tbl&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dim</span>(old_movies)</code></pre></div>
+<pre><code>## [1] NA 12</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(<span class="kw">object.size</span>(old_movies), <span class="dt">units =</span> <span class="st">&quot;Kb&quot;</span>)</code></pre></div>
+<pre><code>## 6.8 Kb</code></pre>
+</section><section id="use-collect-to-bring-into-r" class="slide level2">
+<h2>Use <code>collect()</code> to bring into R</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">old_movies_local &lt;-<span class="st"> </span>old_movies <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">collect</span>()
+<span class="kw">class</span>(old_movies_local)</code></pre></div>
+<pre><code>## [1] &quot;tbl_df&quot;     &quot;tbl&quot;        &quot;data.frame&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dim</span>(old_movies_local)</code></pre></div>
+<pre><code>## [1] 184837     12</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(<span class="kw">object.size</span>(old_movies_local), <span class="dt">units =</span> <span class="st">&quot;Mb&quot;</span>)</code></pre></div>
+<pre><code>## 39.2 Mb</code></pre>
+</section><section id="lazy-evaluation" class="slide level2">
+<h2>Lazy evaluation</h2>
+<ul>
+<li>Pipelines that don’t ask for data
+<ul>
+<li>evaluated fast</li>
+</ul></li>
+<li>Processing tiggered when data is needed
+<ul>
+<li><code>print()</code>, <code>head()</code>, <code>glimpse()</code>, etc.</li>
+<li>plotting</li>
+<li><code>collect()</code></li>
+</ul></li>
+</ul>
+</section>
+<section id="what-next" class="titleslide slide level1"><h2 class="shout">What next?</h2></section><section id="modern-data-science-with-r" class="slide level2">
+<h2><em>Modern Data Science with R</em></h2>
+<div class="double">
+<p><img src="https://images.tandf.co.uk/common/jackets/amazon/978149872/9781498724487.jpg" class="one-col-image"></p>
+<ul>
+<li><a href="https://www.crcpress.com/Modern-Data-Science-with-R/Baumer-Kaplan-Horton/p/book/9781498724487">CRC Press</a></li>
+<li><a href="https://www.amazon.com/Modern-Data-Science-Download-Statistical/dp/1498724485">Amazon</a></li>
+<li>(<a href="http://mdsr-book.github.io" class="uri">http://mdsr-book.github.io</a>)
+<ul>
+<li>sample chapters</li>
+<li>R Markdown examples</li>
+<li>exercise solutions</li>
+</ul></li>
+</ul>
+</div>
+</section><section id="r-for-data-science" class="slide level2">
+<h2><em>R for Data Science</em></h2>
+<div class="double">
+<ul>
+<li>(<a href="http://r4ds.had.co.nz/" class="uri">http://r4ds.had.co.nz/</a>)</li>
+<li>free, online</li>
+<li>open source, written in <code>bookdown</code></li>
+<li>Garrett Grolemund and Hadley Wickham</li>
+</ul>
+<p><img src="http://r4ds.had.co.nz/cover.png" class="one-col-image"></p>
+</div>
+</section><section id="datacamp" class="slide level2">
+<h2>DataCamp</h2>
+<div class="double">
+<p><img src="https://assets.datacamp.com/production/course_1946/shields/original/shield_image_course_1946_20171031-210-qbhai7?1509472890" class="one-col-image"></p>
+<ul>
+<li>Intro to SQL for Data Science
+<ul>
+<li>Nick Carchedi</li>
+</ul></li>
+<li>Data Manipulation in R with <code>dplyr</code>
+<ul>
+<li>Garrett Grolemund</li>
+</ul></li>
+</ul>
+</div>
+</section>
+<section id="db.rstudio.com" class="titleslide slide level1"><h2 class="shout"><a href="http://db.rstudio.com/">db.rstudio.com</a></h2></section><section id="github-repo-httpsgithub.combeanumbertidy-databases" class="slide level2">
+<h2>Github repo: <a href="https://github.com/beanumber/tidy-databases" class="uri">https://github.com/beanumber/tidy-databases</a></h2>
+<div class="double">
+<ul>
+<li><a href="https://github.com/beanumber/tidy-databases/blob/master/tidy_databases_slides.html">slides</a></li>
+<li><a href="https://rawgit.com/beanumber/tidy-databases/master/examples/sql-example1.Rmd">sql-example1.Rmd</a> <a href="https://github.com/beanumber/tidy-databases/blob/master/examples/sql-example1.html">sql-example1.html</a></li>
+<li><a href="https://rawgit.com/beanumber/tidy-databases/master/examples/sql-example2.Rmd">sql-example2.Rmd</a> <a href="https://github.com/beanumber/tidy-databases/blob/master/examples/sql-example2.html">sql-example2.html</a></li>
+<li><a href="http://chance.amstat.org/2015/04/setting-the-stage/">Setting the stage for data science</a>: integration of data management and databases in statistics courses (CHANCE 2015), also <a href="https://arxiv.org/abs/1401.3269" class="uri">https://arxiv.org/abs/1401.3269</a></li>
+</ul>
+</div>
+</section>
+<section id="thank-you" class="titleslide slide level1"><h2 class="shout">Thank you!</h2></section></section>
+
+  <!--
+  To hide progress bar from entire presentation
+  just remove “progress” element.
+  -->
+  <!-- <div class="progress"></div> -->
+  <script src="tidy_databases_slides_files/rmdshower/node_modules/shower/node_modules/shower-core/shower.min.js"></script>
+  <!-- Copyright © 2015 Yours Truly, Famous Inc. -->
+  <!-- Photos by John Carey, fiftyfootshadows.net -->
+
+    <script>renderMathInElement(document.body);</script>
+  
+  
+</body>
+</html>
