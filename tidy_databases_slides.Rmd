@@ -22,7 +22,7 @@ db <- dbConnect_scidb(dbname = "imdb")
 
 <img src="https://wallpapercave.com/wp/5U98bOE.jpg" class="cover">
 
-</br></br></br>
+</br></br></br></br>
 </br></br></br>
 
 <p class="white">
@@ -31,13 +31,22 @@ Ben Baumer & Nick Horton</br>
 November 15, 2017</br>
 </p>
 
+
+## Map of this webinar
+
+#. review key idioms for data wrangling with `dplyr`
+#. introduce the backend interfaces for common database systems
+#. provide examples of how the `dplyr` engine translates a data pipeline
+#. discuss common misconceptions and performance issues
+#. provide pointers on how to learn more
+
 ## &nbsp; { .white }
 
 <img src="https://lsru.github.io/tv_course/img/01_tidyverse_data_science.png" class="cover">
 
 ## &nbsp; { .white }
 
-<img src="https://rviews.rstudio.com/post/2017-05-11-databases-using-r_files/today.png" class="cover">
+<img src="http://db.rstudio.com/homepage/interact.png" class="cover">
 
 # `dplyr`
 
@@ -198,35 +207,18 @@ mtcars %>%
 
 # `dbplyr`
 
-## &nbsp;
+## A brief primer on SQL 
 
-<img src="https://pbs.twimg.com/media/C8Fm5dxWsAE5cPk.jpg" class="cover">
+<div class="double">
+<img src="http://www.freeiconspng.com/uploads/sql-file-icon-0.png" class="one-col-image">
 
-## `dplyr` + SQL connection
-
-- `dplyr` can access a SQL database directly
-- Instead of `tbl_df`, you have a `tbl_sql`
-- Data is stored and processed in SQL
-    - Tiny memory footprint in R
-- **Lazy evaluation**
-    - server-side processing
-    - `dplyr` to SQL translation via `show_query()`
-
-## Example: `tbl_sql`
-
-```{r}
-db <- src_mysql(db = "imdb", host = "scidb.smith.edu",
-                user = "mth292", password = "RememberPi")
-title <- tbl(db, "title")
-class(title)
-print(object.size(title), units = "Kb")
-```
-
-## `tbl_sql` works just like a `tbl_df`
-
-```{r}
-title
-```
+- SQL is not just one thing
+    - MySQL, PostgreSQL, SQLite
+    - Oracle, Big Query, Vertica
+- Theory developed in 1970s (E.F. Codd)
+- Ingres implemented mid-1970s
+- robust, time-tested, well understood
+</div>
 
 
 ## `dplyr` <-> SQL
@@ -261,6 +253,40 @@ LIMIT 0, 10;
 ```
 </div>
 
+## &nbsp;
+
+<img src="https://pbs.twimg.com/media/C8Fm5dxWsAE5cPk.jpg" class="cover">
+
+
+
+## `dbplyr` = `dplyr` + SQL connection
+
+- `dplyr` can access a SQL database directly
+- Instead of `tbl_df`, you have a `tbl_sql`
+- Data is stored and processed in SQL
+    - Tiny memory footprint in R
+- **Lazy evaluation**
+    - server-side processing
+    - `dplyr` to SQL translation via `show_query()`
+
+
+## Example: `tbl_sql`
+
+```{r}
+db <- src_mysql(db = "imdb", host = "scidb.smith.edu",
+                user = "mth292", password = "RememberPi")
+title <- tbl(db, "title")
+class(title)
+print(object.size(title), units = "Kb")
+```
+
+## `tbl_sql` works just like a `tbl_df`
+
+```{r}
+title
+```
+
+
 
 ## Example: `show_query()`
 
@@ -285,13 +311,15 @@ translate_sql(cyl %in% c(4, 6, 8))
 
 ```{r, message=FALSE}
 translate_sql(paste("hp", "wt", "vs"))
+
+# make sense
 translate_sql(CONCAT("hp", "wt", "vs"))
 translate_sql(CRAZY_FUNCTION(mpg))
 ```
 
 ## Pipelines evaluated lazily
 
-```{r}
+```{r lazy-pipeline}
 title %>%
   filter(title %like% '%Star Wars%',
          kind_id == 1,
@@ -302,7 +330,7 @@ title %>%
 
 ## Weird-looking hybrid code
 
-```{r}
+```{r hybrid}
 title %>%
   filter(title %like% '%Star Wars%',
          kind_id == 1,
@@ -325,6 +353,14 @@ webshot("https://github.com/r-dbi/DBI", file = "gfx/dbi.png",
 <div class="centered">
   [<img src="gfx/dbi.png" width="700px"/>](https://github.com/r-dbi/DBI)
 </div>
+
+## &nbsp;
+
+<img src="http://db.rstudio.com/homepage/open-source.png" class="cover">
+
+## &nbsp;
+
+<img src="http://db.rstudio.com/homepage/commercial.png" class="cover">
 
 ## Supported databases
 
@@ -361,6 +397,26 @@ dbListTables(db$con)
 dbListFields(db$con, "title")
 ```
 
+## Bringing data into R
+
+```{r}
+query <- "SELECT production_year, title
+          FROM title
+          WHERE title = 'Star Wars' AND kind_id = 1;"
+dbGetQuery(db$con, query)
+```
+
+## Using `output.var`
+
+```{sql, eval=FALSE}
+# ```{sql, connection=db$con, output.var = "mydataframe"}
+# SELECT production_year, title
+# FROM title
+# WHERE title = 'Star Wars' AND kind_id = 1;
+# ```
+```
+
+
 ## `DBI` demo
 
 # Performance
@@ -368,7 +424,7 @@ dbListFields(db$con, "title")
 
 ## Recall that `tbl_sql`'s are tiny
 
-```{r}
+```{r tiny-tbl_sql}
 title <- tbl(db, "title")
 class(title)
 print(object.size(title), units = "Kb")
@@ -376,7 +432,7 @@ print(object.size(title), units = "Kb")
 
 ## Use `collect()` to bring into R
 
-```{r}
+```{r collect}
 title_lcl <- title %>%
   filter(production_year == 1978) %>%
   collect()
@@ -386,5 +442,47 @@ print(object.size(title_lcl), units = "Mb")
 
 ## Lazy evaluation
 
+Think before you select
 
-# Thank you!!
+# What next?
+
+## *Modern Data Science with R* 
+
+<div class="double">
+<img src="https://images.tandf.co.uk/common/jackets/amazon/978149872/9781498724487.jpg" class="one-col-image">
+
+- [CRC Press](https://www.crcpress.com/Modern-Data-Science-with-R/Baumer-Kaplan-Horton/p/book/9781498724487)
+- [Amazon](https://www.amazon.com/Modern-Data-Science-Download-Statistical/dp/1498724485)
+- (http://mdsr-book.github.io)
+    - sample chapters
+    - R Markdown examples
+    - exercise solutions
+</div>
+
+## *R for Data Science*
+
+<div class="double">
+- (http://r4ds.had.co.nz/)
+- free, online
+- open source, written in `bookdown`
+- Garrett Grolemund and Hadley Wickham
+
+<img src="http://r4ds.had.co.nz/cover.png" class="one-col-image">
+</div>
+
+## DataCamp
+
+<div class="double">
+<img src="https://assets.datacamp.com/production/course_1946/shields/original/shield_image_course_1946_20171031-210-qbhai7?1509472890" class="one-col-image">
+
+- Intro to SQL for Data Science
+    - Nick Carchedi
+- Data Manipulation in R with `dplyr`
+    - Garrett Grolemund
+</div>
+
+## Links
+
+- (http://db.rstudio.com/)
+
+# Thank you!
