@@ -3,10 +3,10 @@ title: "Access Ensembl data"
 author: "Nicholas Horton (nhorton@amherst.edu) and Ben Baumer"
 date: "November 14, 2017"
 output: 
-  pdf_document:
+  html_document:
     fig_height: 3
     fig_width: 5
-  html_document:
+  pdf_document:
     fig_height: 3
     fig_width: 5
   word_document:
@@ -18,14 +18,11 @@ output:
 ```{r, include=FALSE}
 # Don't delete this chunk if you are using the mosaic package
 # This loads the mosaic and dplyr packages
-require(mosaic)
+require(tidyverse)
 ```
 
 ```{r, include=FALSE}
 # Some customization.  You can alter or delete as desired (if you know what you are doing).
-
-# This changes the default colors in lattice plots.
-trellis.par.set(theme=theme.mosaic())  
 
 # knitr settings to control how R chunks work.
 require(knitr)
@@ -37,11 +34,32 @@ opts_chunk$set(
 
 ## Introduction
 
-This document is intended to describe how to access data from a MySQL database using R.  It utilizes a database of 
+This document is intended to describe how to access data from a MySQL database using R.  It utilizes a database of genetic information that has made available for analysis.
+
+
+#### Ensembl
 
 The website at https://www.ensembl.org states:
 
 > Ensembl is a genome browser for vertebrate genomes that supports research in comparative genomics, evolution, sequence variation and transcriptional regulation. Ensembl annotate genes, computes multiple alignments, predicts regulatory function and collects disease data. Ensembl tools include BLAST, BLAT, BioMart and the Variant Effect Predictor (VEP) for all supported species.
+
+The website provides a list of what one can do with Ensembl:
+
+- View genes along with other annotation along the chromosome
+- View alternative transcripts (including splice variants) for a gene
+- Explore homologues and phylogenetic trees across more than 40 species for any gene
+- Compare whole genome alignments and conserved regions across species
+- View microarray sequences that match to Ensembl genes
+- View ESTs, clones, mRNA and proteins for any chromosomal region
+- Examine single nucleotide polymorphisms (SNPs) for a gene or chromosomal region
+- View SNPs across strains (rat, mouse), populations (human), or even breeds (dog)
+- View positions and sequence of mRNA and protein that align with an Ensembl gene
+- Upload your own data
+- Use BLAST, or BLAT, a similar sequence alignment search tool, against any Ensembl
+genome
+- Export sequence, or create a table of gene information with BioMart
+
+#### Background on databases in R
 
 A relevant paper on the topic of data management and databases in R can be found at http://chance.amstat.org/2015/04/setting-the-stage.
 
@@ -51,7 +69,7 @@ A relevant paper on the topic of data management and databases in R can be found
 First we demonstrate how to access data using SQL (structured query language) commands and the `dbGetQuery()` function.  We begin by setting up a connection to the database.
 
 ```{r}
-library(mosaic)
+library(tidyverse)
 library(RMySQL)
 con <- dbConnect(MySQL(), host = "ensembldb.ensembl.org",
                 user = "anonymous", password = "", 
@@ -63,17 +81,19 @@ Next a series of SQL queries can be sent to the database.  These return R datafr
 ```{r}
 ds <- dbGetQuery(con, "SHOW DATABASES")
 dim(ds)
-grep("scrofa", ds$Database, pattern=TRUE)
+grep("scrofa", ds$Database, value=TRUE)
 ```
 
 Let's focus on the `sus_scrofa_variation_79_102` database.  
 ```{r warning=FALSE}
-dbGetQuery(con, "USE sus_scrofa_variation_79_102")
+dbGetQuery(con, "USE sus_scrofa_variation_79_102;")
 dbGetQuery(con, "SHOW TABLES")
 dbGetQuery(con, "SELECT * FROM publication")
 dbGetQuery(con, "SELECT * FROM source")
-ds <- dbGetQuery(con, "SELECT * from Individual LIMIT 10")
+ds <- dbGetQuery(con, "SELECT * from individual LIMIT 1000")
 ds
+glimpse(ds)
+tally(~ description, data=ds)
 ```
 
 We can track down the publication which is associated with these data.
@@ -85,8 +105,9 @@ East Balkan Swine (EBS) Sus scrofa is the only aboriginal domesticated pig breed
 ## Accessing a database using dplyr commands
 
 Alternatively, a connection can be made to the server by creating a series of dplyr table objects.  
-```{r}
-library(mosaic)      
+
+```{r warning=TRUE}
+library(tidyverse)      
 db <- src_mysql(dbname = "sus_scrofa_variation_79_102", 
                 host = "ensembldb.ensembl.org", 
                 user = "anonymous",
@@ -95,8 +116,18 @@ db <- src_mysql(dbname = "sus_scrofa_variation_79_102",
 Allele <- tbl(db, "allele")
 ```
 
-#### Let's explore this table.
+#### Let's explore this table
+
 ```{r}
 Allele %>% 
   head()
 ```
+
+```{r}
+Allele %>%
+  group_by(allele_code_id) %>%
+  summarize(meanfreq = mean(frequency), count = n())
+```
+
+Want to explore more?  See the tutorials at https://www.ensembl.org/info/website/tutorials/index.html
+

@@ -96,6 +96,7 @@ Plus:
 - object of class `tbl`
 - a re-imagining of a `data.frame`
 - it looks and acts like a `data.frame`
+- but it's even better...
 - `tidyverse` works with tibbles
 </div>
 
@@ -444,7 +445,7 @@ webshot("https://github.com/r-dbi/DBI", file = "gfx/dbi.png",
 ```
 
 <div class="centered">
-  [<img src="gfx/dbi.png" width="700px"/>](https://github.com/r-dbi/DBI)
+  [<img src="gfx/dbi.png" width="800px"/>](https://github.com/r-dbi/DBI)
 </div>
 
 ## &nbsp;
@@ -534,6 +535,8 @@ WHERE title = 'Star Wars' AND kind_id = 1;
 ```{r}
 head(mydataframe)
 ```
+
+# Examples
 
 # Performance
 
