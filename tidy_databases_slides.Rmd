@@ -22,13 +22,14 @@ db <- dbConnect_scidb(dbname = "imdb")
 
 <img src="https://wallpapercave.com/wp/5U98bOE.jpg" class="cover">
 
-</br></br></br></br>
+</br></br></br>
 </br></br></br>
 
 <p class="white">
 ASA Webinar</br>
 Ben Baumer & Nick Horton</br>
 November 15, 2017</br>
+(https://github.com/beanumber/tidy-databases)
 </p>
 
 
