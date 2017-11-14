@@ -7,6 +7,7 @@ output:
     self_contained: false
     katex: true
     theme: ribbon
+abstract: "The dplyr package within R provides a flexible and powerful syntax for data wrangling operations. However, data objects within R are typically stored in memory and performance issues may arise as data become large. Database management systems implementing SQL (structured query language) provide a ubiquitous architecture for storing and querying data that is relational in nature. While there has been support for data retrieval in R from relational databases such as MySQL, SQLite, and PostgreSQL, recent advances that have added interfaces between R and SQL enable users to seamlessly leverage storage and retrieval mechanisms while remaining within R. In this webinar, we will review key idioms for data wrangling within dplyr, introduce the backend interfaces for common database systems, provide examples of ways that the dplyr engine translates a data pipeline, and discuss common misconceptions and performance issues."
 ---
 
 
@@ -142,32 +143,22 @@ Plus:
 
 # The pipe
 
-## The pipe
+## The pipe operator
 
 <div class="double">
 
-<img src="https://d21ii91i3y6o6h.cloudfront.net/gallery_images/from_proof/3632/small/1419844831/magrittr.png" class="cover"/>
-- Provided by `magrittr` package
+<img src="http://hexb.in/hexagons/magrittr.png" height="244px"/>
+
 - Inspired by pipe (`|`) in UNIX
+- Provided by `magrittr` package
 
 <img src="https://upload.wikimedia.org/wikipedia/en/b/b9/MagrittePipe.jpg" class="one-col-image">
+
 - [The Treachery of Images](https://en.wikipedia.org/wiki/The_Treachery_of_Images)
 - Rene Magritte, 1929
 
 </div>
 
-## Aside: `magrittr`
-
-
-<div class="double">
-
-<img src="https://upload.wikimedia.org/wikipedia/en/b/b9/MagrittePipe.jpg" class="one-col-image">
-
-- [The Treachery of Images](https://en.wikipedia.org/wiki/The_Treachery_of_Images)
-- Pipe (`%>%`) is provided by `magrittr` package
-- Inspired by pipe (`|`) in UNIX
-
-</div>
 
 ## How does the pipe work?
 
@@ -618,22 +609,28 @@ print(object.size(old_movies_local), units = "Mb")
 ## DataCamp
 
 <div class="double">
-<img src="https://assets.datacamp.com/production/course_1946/shields/original/shield_image_course_1946_20171031-210-qbhai7?1509472890" class="one-col-image">
+<img src="https://assets.datacamp.com/production/course_4914/shields/original/shield_image_course_4914_20171110-211-cc95vc?1510323697" class="one-col-image">
 
-- Intro to SQL for Data Science
+- [Intro to the Tidyverse](https://www.datacamp.com/courses/introduction-to-the-tidyverse)
+    - David Robinson
+- [Intro to SQL for Data Science](https://www.datacamp.com/courses/intro-to-sql-for-data-science)
     - Nick Carchedi
-- Data Manipulation in R with `dplyr`
+- [Data Manipulation in R with `dplyr`](https://www.datacamp.com/courses/dplyr-data-manipulation-r-tutorial)
     - Garrett Grolemund
+
 </div>
 
 # [db.rstudio.com](http://db.rstudio.com/)
 
-## Github repo: https://github.com/beanumber/tidy-databases
+## Resources
+
 
 <div class="double">
-- [slides](https://github.com/beanumber/tidy-databases/blob/master/tidy_databases_slides.html)
-- [sql-example1.Rmd](https://rawgit.com/beanumber/tidy-databases/master/examples/sql-example1.Rmd) [sql-example1.html](https://github.com/beanumber/tidy-databases/blob/master/examples/sql-example1.html)
-- [sql-example2.Rmd](https://rawgit.com/beanumber/tidy-databases/master/examples/sql-example2.Rmd) [sql-example2.html](https://github.com/beanumber/tidy-databases/blob/master/examples/sql-example2.html)
+- Github repo:  
+  https://github.com/beanumber/tidy-databases
+- [these slides](http://htmlpreview.github.io/?https://github.com/beanumber/tidy-databases/blob/master/tidy_databases_slides.html)
+- sql-example1 ([Rmd](https://rawgit.com/beanumber/tidy-databases/master/examples/sql-example1.Rmd) |  [HTML](http://htmlpreview.github.io/?https://github.com/beanumber/tidy-databases/blob/master/examples/sql-example1.html) )
+- sql-example2 ( [Rmd](https://rawgit.com/beanumber/tidy-databases/master/examples/sql-example2.Rmd) | [HTML](http://htmlpreview.github.io/?https://github.com/beanumber/tidy-databases/blob/master/examples/sql-example2.html) )
 - [Setting the stage for data science](http://chance.amstat.org/2015/04/setting-the-stage/): integration of data management and databases in statistics courses (CHANCE 2015), also https://arxiv.org/abs/1401.3269
 
 </div>
