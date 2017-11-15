@@ -287,7 +287,7 @@ SELECT
 FROM table t
 LEFT JOIN lkup l
   ON t.lkup_id = l.id
-WHERE field = "value"
+WHERE field = 'value'
 GROUP BY year
 HAVING N > 100
 ORDER BY N desc
@@ -582,7 +582,7 @@ print(object.size(old_movies_local), units = "Mb")
 
 - Pipelines that don't ask for data
     - evaluated fast
-- Processing tiggered when data is needed
+- Processing triggered when data is needed
     - `print()`, `head()`, `glimpse()`, etc.
     - plotting
     - `collect()`
