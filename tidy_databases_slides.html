@@ -67,9 +67,9 @@
 <section id="databases-in-the-tidyverse" class="slide level2 white">
 <h2>Databases in the tidyverse</h2>
 <p><img src="https://wallpapercave.com/wp/5U98bOE.jpg" class="cover"></p>
-<p></br></br></br></br> </br></br></br></p>
+<p></br></br></br> </br></br></br></p>
 <p class="white">
-ASA Webinar</br> Ben Baumer &amp; Nick Horton</br> November 15, 2017</br>
+ASA Webinar</br> Ben Baumer &amp; Nick Horton</br> November 15, 2017</br> (<a href="https://github.com/beanumber/tidy-databases" class="uri">https://github.com/beanumber/tidy-databases</a>)
 </p>
 </section>
 <section id="map-of-this-webinar" class="slide level2">
@@ -173,17 +173,18 @@ ASA Webinar</br> Ben Baumer &amp; Nick Horton</br> November 15, 2017</br>
 <p><img src="gfx/group_by.png" width="700px"/></p>
 </div>
 </section>
-<section id="the-pipe" class="titleslide slide level1"><h2 class="shout">The pipe</h2></section><section id="magrittr" class="slide level2">
-<h2><code>magrittr</code></h2>
-<p><img src="https://d21ii91i3y6o6h.cloudfront.net/gallery_images/from_proof/3632/small/1419844831/magrittr.png" class="cover"/></p>
-</section><section id="aside-magrittr" class="slide level2">
-<h2>Aside: <code>magrittr</code></h2>
+<section id="the-pipe" class="titleslide slide level1"><h2 class="shout">The pipe</h2></section><section id="the-pipe-operator" class="slide level2">
+<h2>The pipe operator</h2>
 <div class="double">
+<p><img src="http://hexb.in/hexagons/magrittr.png" height="244px"/></p>
+<ul>
+<li>Inspired by pipe (<code>|</code>) in UNIX</li>
+<li>Provided by <code>magrittr</code> package</li>
+</ul>
 <p><img src="https://upload.wikimedia.org/wikipedia/en/b/b9/MagrittePipe.jpg" class="one-col-image"></p>
 <ul>
 <li><a href="https://en.wikipedia.org/wiki/The_Treachery_of_Images">The Treachery of Images</a></li>
-<li>Pipe (<code>%&gt;%</code>) is provided by <code>magrittr</code> package</li>
-<li>Inspired by pipe (<code>|</code>) in UNIX</li>
+<li>Rene Magritte, 1929</li>
 </ul>
 </div>
 </section><section id="how-does-the-pipe-work" class="slide level2">
@@ -545,7 +546,7 @@ star_wars</code></pre></div>
 <pre><code>## List of 2
 ##  $ con  :Formal class &#39;MySQLConnection&#39; [package &quot;RMySQL&quot;] with 1 slot
 ##   .. ..@ Id: int [1:2] 0 1
-##  $ disco:&lt;environment: 0x7fc63afd0a98&gt; 
+##  $ disco:&lt;environment: 0x9d51b50&gt; 
 ##  - attr(*, &quot;class&quot;)= chr [1:3] &quot;src_dbi&quot; &quot;src_sql&quot; &quot;src&quot;</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">class</span>(db<span class="op">$</span>con)</code></pre></div>
 <pre><code>## [1] &quot;MySQLConnection&quot;
@@ -683,26 +684,32 @@ star_wars</code></pre></div>
 </section><section id="datacamp" class="slide level2">
 <h2>DataCamp</h2>
 <div class="double">
-<p><img src="https://assets.datacamp.com/production/course_1946/shields/original/shield_image_course_1946_20171031-210-qbhai7?1509472890" class="one-col-image"></p>
+<p><img src="https://assets.datacamp.com/production/course_4914/shields/original/shield_image_course_4914_20171110-211-cc95vc?1510323697" class="one-col-image"></p>
 <ul>
-<li>Intro to SQL for Data Science
+<li><a href="https://www.datacamp.com/courses/introduction-to-the-tidyverse">Intro to the Tidyverse</a>
+<ul>
+<li>David Robinson</li>
+</ul></li>
+<li><a href="https://www.datacamp.com/courses/intro-to-sql-for-data-science">Intro to SQL for Data Science</a>
 <ul>
 <li>Nick Carchedi</li>
 </ul></li>
-<li>Data Manipulation in R with <code>dplyr</code>
+<li><a href="https://www.datacamp.com/courses/dplyr-data-manipulation-r-tutorial">Data Manipulation in R with <code>dplyr</code></a>
 <ul>
 <li>Garrett Grolemund</li>
 </ul></li>
 </ul>
 </div>
 </section>
-<section id="db.rstudio.com" class="titleslide slide level1"><h2 class="shout"><a href="http://db.rstudio.com/">db.rstudio.com</a></h2></section><section id="github-repo-httpsgithub.combeanumbertidy-databases" class="slide level2">
-<h2>Github repo: <a href="https://github.com/beanumber/tidy-databases" class="uri">https://github.com/beanumber/tidy-databases</a></h2>
+<section id="db.rstudio.com" class="titleslide slide level1"><h2 class="shout"><a href="http://db.rstudio.com/">db.rstudio.com</a></h2></section><section id="resources" class="slide level2">
+<h2>Resources</h2>
 <div class="double">
 <ul>
-<li><a href="https://github.com/beanumber/tidy-databases/blob/master/tidy_databases_slides.html">slides</a></li>
-<li><a href="https://rawgit.com/beanumber/tidy-databases/master/examples/sql-example1.Rmd">sql-example1.Rmd</a> <a href="https://github.com/beanumber/tidy-databases/blob/master/examples/sql-example1.html">sql-example1.html</a></li>
-<li><a href="https://rawgit.com/beanumber/tidy-databases/master/examples/sql-example2.Rmd">sql-example2.Rmd</a> <a href="https://github.com/beanumber/tidy-databases/blob/master/examples/sql-example2.html">sql-example2.html</a></li>
+<li>Github repo:<br />
+<a href="https://github.com/beanumber/tidy-databases" class="uri">https://github.com/beanumber/tidy-databases</a></li>
+<li><a href="https://beanumber.github.io/tidy-databases/tidy_databases_slides.html">these slides</a></li>
+<li>sql-example1 (<a href="https://rawgit.com/beanumber/tidy-databases/master/examples/sql-example1.Rmd">Rmd</a> | <a href="https://beanumber.github.io/tidy-databases/examples/sql-example1.html">HTML</a> )</li>
+<li>sql-example2 ( <a href="https://rawgit.com/beanumber/tidy-databases/master/examples/sql-example2.Rmd">Rmd</a> | <a href="https://beanumber.github.io/tidy-databases/examples/sql-example2.html">HTML</a> )</li>
 <li><a href="http://chance.amstat.org/2015/04/setting-the-stage/">Setting the stage for data science</a>: integration of data management and databases in statistics courses (CHANCE 2015), also <a href="https://arxiv.org/abs/1401.3269" class="uri">https://arxiv.org/abs/1401.3269</a></li>
 </ul>
 </div>

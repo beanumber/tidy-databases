@@ -15,9 +15,14 @@ The `dplyr` package within R provides a flexible and powerful syntax for data wr
 
 ### Other resources
 
+-   [Webinar slides](https://beanumber.github.io/tidy-databases/tidy_databases_slides.html)
+-   [SQL Example 1](https://beanumber.github.io/tidy-databases/examples/sql-example1.html)
+-   [SQL Example 2](https://beanumber.github.io/tidy-databases/examples/sql-example2.html)
 -   [Setting the stage for data science](http://chance.amstat.org/2015/04/setting-the-stage/): integration of data management and databases in statistics courses (CHANCE 2015), also <https://arxiv.org/abs/1401.3269>
--   [R for Data Science](http://r4ds.had.co.nz/)
 -   [Modern Data Science with R](http://mdsr-book.github.io/)
+-   [R for Data Science](http://r4ds.had.co.nz/)
 -   [Dplyr vignettes](http://dplyr.tidyverse.org/)
 
-last updated November 9, 2017
+------------------------------------------------------------------------
+
+Last updated November 14, 2017
