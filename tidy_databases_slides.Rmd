@@ -295,9 +295,16 @@ LIMIT 0, 10;
 ```
 </div>
 
-## &nbsp;
+## `dbplyr`
 
-<img src="https://pbs.twimg.com/media/C8Fm5dxWsAE5cPk.jpg" class="cover">
+```{r, eval=FALSE, include=FALSE}
+webshot::webshot("https://github.com/tidyverse/dbplyr", 
+                 file = "gfx/dbplyr.png", 
+                 cliprect = c(1400, 0, 1000, 300))
+
+```
+
+<img src="gfx/dbplyr.png" class="cover">
 
 
 
