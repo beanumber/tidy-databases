@@ -25,4 +25,8 @@ The `dplyr` package within R provides a flexible and powerful syntax for data wr
 
 ------------------------------------------------------------------------
 
-Last updated November 14, 2017
+### Acknowledgements
+
+This work was supported by NIH grant 1R15DC014129-03 (<https://projectreporter.nih.gov/project_info_description.cfm?aid=8769352&icde=30039221&ddparam>=&ddvalue=&ddsub=&cr=10&csb=default&cs=ASC). More info can be found at: <http://www.science.smith.edu/wai-database/>
+
+Last updated November 26, 2017
